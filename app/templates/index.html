@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Not Steam - Strona Główna</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/style.css?v=3" />
 
   <!-- Swiper CSS -->
   <link
@@ -22,6 +22,18 @@
     </div>
   </div>
 
+  <button class="menu-toggle">☰</button>
+
+<!-- Sidebar / menu boczne -->
+<nav class="sidebar hidden">
+  <ul>
+    <li><a>Strona główna</a></li>
+    <li><a>Nowości</a></li>
+    <li><a>Kategorie</a></li>
+    <li><a>Kontakt</a></li>
+  </ul>
+</nav>
+
   <div class="section_titles">
     <h2>
       Recommended games
@@ -32,12 +44,16 @@
   <div class="carousel-wrapper">
     <div class="swiper carousel1">
       <div class="swiper-wrapper">
-        <div class="swiper-slide"><img src="./static/images/placeholder.jpg" alt="Gra 1" /><p>Gra 1</p></div>
-        <div class="swiper-slide"><img src="./static/images/placeholder2.jpg" alt="Gra 2" /><p>Gra 2</p></div>
-        <div class="swiper-slide"><img src="./static/images/placeholder3.jpg" alt="Gra 3" /><p>Gra 3</p></div>
-        <div class="swiper-slide"><img src="./static/images/placeholder4.jpg" alt="Gra 4" /><p>Gra 4</p></div>
-        <div class="swiper-slide"><img src="./static/images/placeholder5.jpg" alt="Gra 5" /><p>Gra 5</p></div>
-      </div>
+  {% for game in carousel_games %}
+    <div class="swiper-slide">
+      <a href="/game/{{ game.id }}">
+        <img src="./static/images/placeholder.jpg" alt="{{ game.title }}" />
+        <p>{{ game.title }}</p>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
       <div class="swiper-button-prev swiper-button-prev-1"></div>
       <div class="swiper-button-next swiper-button-next-1"></div>
       <div class="swiper-pagination swiper-pagination-1"></div>
@@ -68,9 +84,12 @@
     </div>
   </div>
 
+
+  <div>
+    <h2 class="section_titles">Genres</h2>
+  </div>
   <!-- Kafelki poniżej karuzeli -->
 <div class="tiles-section">
-  <h2>Horror games</h2>
   <div class="tiles-grid">
     <div class="tile">
       <img src="./static/images/placeholder.jpg" alt="Tile 1">
@@ -96,8 +115,34 @@
       <img src="./static/images/placeholder6.jpg" alt="Tile 6">
       <p>Tile 6</p>
     </div>
+    <div class="tile">
+      <img src="./static/images/placeholder7.jpg" alt="Tile 7">
+      <p>Tile 7</p>
+    </div>
   </div>
 </div>
+
+<div class="rating-bar">
+  <p>Oceń stronę:</p>
+  <div class="stars">
+    <span class="star" data-value="1">&#9734;</span>
+    <span class="star" data-value="2">&#9734;</span>
+    <span class="star" data-value="3">&#9734;</span>
+    <span class="star" data-value="4">&#9734;</span>
+    <span class="star" data-value="5">&#9734;</span>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <p>&copy; 2025 Not Steam. Wszystkie prawa zastrzeżone.</p>
+    <div class="footer-links">
+      <a href="#">Regulamin</a>
+      <a href="#">Polityka prywatności</a>
+      <a href="#">Kontakt</a>
+    </div>
+  </div>
+</footer>
 
 
   <!-- Swiper JS -->
@@ -132,7 +177,24 @@
         clickable: true,
       },
     });
-  </script>
+
+    const stars = document.querySelectorAll('.star');
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      const rating = parseInt(star.getAttribute('data-value'));
+      stars.forEach(s => {
+        s.classList.toggle('filled', parseInt(s.getAttribute('data-value')) <= rating);
+      });
+    });
+  });
+
+  const menuToggle = document.querySelector('.menu-toggle');
+  const sidebar = document.querySelector('.sidebar');
+
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+  });
+</script>
 
 </body>
 </html>

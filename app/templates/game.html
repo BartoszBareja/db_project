@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ game.title }}</title>
+  <link rel="stylesheet" href="/static/style.css?v=3" />
+</head>
+<body>
+
+  <div class="main">
+    <h1>{{ game.title }}</h1>
+    <p>{{ game.description }}</p>
+
+    {% if game.image_url %}
+      <img src="{{ game.image_url }}" alt="{{ game.title }}" />
+    {% else %}
+      <img src="/static/images/placeholder.jpg" alt="Brak okładki">
+    {% endif %}
+
+    <p><strong>Wydawca:</strong> {{ game.publisher }}</p>
+    <p><strong>Data premiery:</strong> {{ game.release_date }}</p>
+    <p><strong>Gatunek:</strong> {{ game.genre }}</p>
+  </div>
+
+  <a href="/">← Wróć na stronę główną</a>
+
+</body>
+</html>
