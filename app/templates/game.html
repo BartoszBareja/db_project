@@ -44,10 +44,44 @@
 {% endblock %}
 
 {% block scripts %}
+
+{% if request.cookies.get("access_token") %}
+  <form id="library-form" method="post" action="/game/{{ game.id }}/add_to_library" style="display:inline;">
+    <button type="submit">Dodaj do biblioteki</button>
+  </form>
+
+  <form id="wishlist-form" method="post" action="/game/{{ game.id }}/add_to_wishlist" style="display:inline;">
+    <button type="submit">Dodaj do wishlisty</button>
+  </form>
+{% else %}
+  <p><a href="/login">Zaloguj się</a>, aby dodawać gry do biblioteki i wishlisty.</p>
+{% endif %}
+
+
 <script>
   function toggleDescription(id) {
     const el = document.getElementById(id);
     el.classList.toggle("hidden");
   }
+
+   async function postForm(url) {
+    const response = await fetch(url, {
+      method: 'POST',
+      credentials: 'same-origin'
+    });
+    const data = await response.json();
+    alert(data.message);
+  }
+
+  document.getElementById("library-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    postForm(this.action);
+  });
+
+  document.getElementById("wishlist-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    postForm(this.action);
+  });
+
 </script>
 {% endblock %}

@@ -1,9 +1,13 @@
 from sqlalchemy import DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, Numeric, TIMESTAMP, ForeignKey, Enum, DateTime as PgEnum
+from sqlalchemy import Column, Integer, String, Date, Numeric, TIMESTAMP, ForeignKey, Boolean
 import enum
+from sqlalchemy.orm import relationship
+from pydantic import BaseModel, EmailStr
+from typing import Optional
+from datetime import date
 
-Base = declarative_base()
+Base = declarative_base()  # TYLKO RAZ
 
 class Game(Base):
     __tablename__ = "games"
@@ -23,26 +27,41 @@ class Game(Base):
     min_ram = Column(String(50))
     min_disk = Column(String(50))
 
-Base = declarative_base()
-
-
 class UserStatus(enum.Enum):
     online = "online"
     offline = "offline"
 
+class Library(Base):
+    __tablename__ = "library"
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    game_id = Column(Integer, ForeignKey("games.id"), primary_key=True)
+    purchase_date = Column(DateTime)
+    is_owned = Column(Boolean, default=True)
+
+    game = relationship("Game")
+    user = relationship("User", back_populates="library_entries")
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), nullable=False, unique=True)
-    email = Column(String(100), nullable=False, unique=True)
+    username = Column(String(50), nullable=False)
+    email = Column(String(100), nullable=False)
     password_hash = Column(String(255), nullable=False)
-    profile_picture = Column(String(255))
-    profile_description = Column(String(300))
+    profile_picture = Column(String(255), nullable=True)
+    profile_description = Column(String(300), nullable=True)
     wallet_balance = Column(Numeric(10, 2), nullable=False, default=0)
     created_at = Column(TIMESTAMP, nullable=False)
     birth_date = Column(Date, nullable=False)
-    country_id = Column(Integer)
+    country_id = Column(Integer, nullable=True)
     sum_points = Column(Integer, nullable=False, default=0)
-    status = Column(PgEnum(UserStatus), nullable=False, default=UserStatus.offline)
+    status = Column(String, nullable=False, default="offline")  # user_status jako string
+
+    library_entries = relationship("Library", back_populates="user")
+
+class UserUpdate(BaseModel):
+    email: EmailStr
+    profile_description: Optional[str] = None
+    country_id: Optional[str] = None
+    birth_date: Optional[date] = None
+    status: Optional[str] = None

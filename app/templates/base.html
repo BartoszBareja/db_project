@@ -33,14 +33,21 @@
   <button class="menu-toggle">☰</button>
 
   <!-- Sidebar / menu boczne -->
-  <nav class="sidebar hidden">
-    <ul>
-      <li><a>Strona główna</a></li>
-      <li><a>Nowości</a></li>
-      <li><a>Kategorie</a></li>
-      <li><a>Kontakt</a></li>
-    </ul>
-  </nav>
+<nav class="sidebar hidden">
+  <ul>
+    <li><a href="/">Strona główna</a></li>
+    <li><a href="/friends">Znajomi</a></li>
+    <li><a href="/library">Biblioteka</a></li>
+    {% if current_user %}
+      <li><a href="/profile">Profil</a></li>
+      <li><a href="/logout">Wyloguj</a></li>
+    {% else %}
+      <li><a href="/login">Zaloguj się</a></li>
+      <li><a href="/register">Rejestracja</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
 
   {% block content %}{% endblock %}
 

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <div class="profile-header">
+    <img class="profile-avatar" src="{{ user.profile_picture or '/static/default_avatar.png' }}" alt="Avatar użytkownika">
+    <div class="profile-username">{{ user.username }}</div>
+  </div>
+
+  <div class="profile-info">
+    <p><span>Email:</span> {{ user.email }}</p>
+    <p><span>Opis:</span>
+      {% if user.profile_description %}
+        {{ user.profile_description }}
+      {% else %}
+        <span class="empty">Brak opisu</span>
+      {% endif %}
+    </p>
+    <p><span>Kraj:</span>
+      {% if user.country_id %}
+        {{ user.country_id }}
+      {% else %}
+        <span class="empty">Nie podano</span>
+      {% endif %}
+    </p>
+    <p><span>Data urodzenia:</span>
+      {% if user.birth_date %}
+        {{ user.birth_date }}
+      {% else %}
+        <span class="empty">Nie podano</span>
+      {% endif %}
+    </p>
+    <p><span>Status:</span> {{ user.status or 'Brak statusu' }}</p>
+    <p><span>Saldo portfela:</span> {{ user.wallet_balance }}</p>
+  </div>
+
+  <a href="/profile/edit" class="edit-profile-btn">Edytuj profil</a>
+</div>
+
+<div class="wishlist">
+  <h2>Wishlist</h2>
+  {% if wishlist and wishlist|length > 0 %}
+    <ul>
+      {% for game in wishlist %}
+        <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Brak gier na liście życzeń.</p>
+  {% endif %}
+</div>
+
+<h2>Osiągnięcia użytkownika</h2>
+{% if achievements %}
+  <ul class="achievement-list">
+    {% for a in achievements %}
+      <li class="achievement-item">
+        <strong>{{ a.name }}</strong> ({{ a.points }} pkt)
+        {% if a.description %}
+          <p>{{ a.description }}</p>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Użytkownik nie ma jeszcze żadnych osiągnięć.</p>
+{% endif %}
+
+
+{% endblock %}

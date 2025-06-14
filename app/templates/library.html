@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Moja Biblioteka{% endblock %}
+
+{% block content %}
+  <div class="main">
+    <h1>Biblioteka użytkownika {{ current_user.username }}</h1>
+
+    {% if games %}
+      <ul class="game-list">
+        {% for game in games %}
+          <li>
+            <a href="/game/{{ game.id }}">
+              {{ game.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Nie masz jeszcze żadnych gier w bibliotece.</p>
+    {% endif %}
+
+    <a href="/">← Wróć na stronę główną</a>
+  </div>
+{% endblock %}
