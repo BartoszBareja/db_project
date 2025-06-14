@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Not Steam - Strona Główna</title>
   <link rel="stylesheet" href="/static/style.css" />
+
   <!-- Swiper CSS -->
   <link
     rel="stylesheet"
@@ -12,6 +13,7 @@
 </head>
 <body>
 
+  <!-- Nagłówek z paskiem wyszukiwania -->
   <div class="main">
     <p>Not Steam</p>
     <div class="search-bar">
@@ -20,13 +22,21 @@
     </div>
   </div>
 
+  <div class="section_titles">
+    <h2>
+      Recommended games
+    </h2>
+  </div>
+
+  <!-- Karuzela 1 -->
   <div class="carousel-wrapper">
     <div class="swiper carousel1">
       <div class="swiper-wrapper">
-        <div class="swiper-slide"><img src="/static/images/placeholder.jpg" alt="Gra 1" /><p>Gra 1</p></div>
-        <div class="swiper-slide"><img src="/static/images/placeholder2.jpg" alt="Gra 2" /><p>Gra 2</p></div>
-        <div class="swiper-slide"><img src="/static/images/placeholder3.jpg" alt="Gra 3" /><p>Gra 3</p></div>
-        <div class="swiper-slide"><img src="/static/images/placeholder4.jpg" alt="Gra 4" /><p>Gra 4</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder.jpg" alt="Gra 1" /><p>Gra 1</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder2.jpg" alt="Gra 2" /><p>Gra 2</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder3.jpg" alt="Gra 3" /><p>Gra 3</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder4.jpg" alt="Gra 4" /><p>Gra 4</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder5.jpg" alt="Gra 5" /><p>Gra 5</p></div>
       </div>
       <div class="swiper-button-prev swiper-button-prev-1"></div>
       <div class="swiper-button-next swiper-button-next-1"></div>
@@ -34,20 +44,59 @@
     </div>
   </div>
 
+  <div class="section_titles">
+    <h2>
+      New games
+    </h2>
+  </div>
+
+  <!-- Karuzela 2 -->
+  <div class="carousel-wrapper">
+    <div class="swiper carousel2">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="./static/images/placeholder.jpg" alt="Nowość 1" /><p>Nowość 1</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder2.jpg" alt="Nowość 2" /><p>Nowość 2</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder3.jpg" alt="Nowość 3" /><p>Nowość 3</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder4.jpg" alt="Nowość 4" /><p>Nowość 4</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder5.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder6.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder7.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
+      </div>
+      <div class="swiper-button-prev swiper-button-prev-2"></div>
+      <div class="swiper-button-next swiper-button-next-2"></div>
+      <div class="swiper-pagination swiper-pagination-2"></div>
+    </div>
+  </div>
+
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
+  <!-- Inicjalizacja karuzel -->
   <script>
-    const swiper1 = new Swiper('.carousel1', {
+    new Swiper('.carousel1', {
       slidesPerView: 3,
-      spaceBetween: 20,
       loop: true,
+      spaceBetween: 20,
       navigation: {
         nextEl: '.swiper-button-next-1',
         prevEl: '.swiper-button-prev-1',
       },
       pagination: {
         el: '.swiper-pagination-1',
+        clickable: true,
+      },
+    });
+
+    new Swiper('.carousel2', {
+      slidesPerView: 6,
+      loop: true,
+      spaceBetween: 15,
+      navigation: {
+        nextEl: '.swiper-button-next-2',
+        prevEl: '.swiper-button-prev-2',
+      },
+      pagination: {
+        el: '.swiper-pagination-2',
         clickable: true,
       },
     });
