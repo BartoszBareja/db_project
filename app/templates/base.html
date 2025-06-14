@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Not Steam - Strona Główna{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+</head>
+<body>
+
+  <!-- Nagłówek z paskiem wyszukiwania -->
+  <div class="main">
+    <p>GameZone</p>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Szukaj gier...">
+      <button type="submit">Szukaj</button>
+    </div>
+
+    {% if current_user %}
+      <div class="user-info">
+        <span class="username">👤 {{ current_user.username }}</span>
+        <a href="/logout" class="logout-button">Wyloguj</a>
+      </div>
+    {% else %}
+      <div class="user-info">
+        <a href="/login" class="auth-button">Zaloguj</a>
+        <a href="/register" class="auth-button">Rejestracja</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <button class="menu-toggle">☰</button>
+
+  <!-- Sidebar / menu boczne -->
+  <nav class="sidebar hidden">
+    <ul>
+      <li><a>Strona główna</a></li>
+      <li><a>Nowości</a></li>
+      <li><a>Kategorie</a></li>
+      <li><a>Kontakt</a></li>
+    </ul>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2025 Not Steam. Wszystkie prawa zastrzeżone.</p>
+      <div class="footer-links">
+        <a href="#">Regulamin</a>
+        <a href="#">Polityka prywatności</a>
+        <a href="#">Kontakt</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <script>
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,29 +1,33 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ producer.name }}</title>
-  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+{% extends "base.html" %}
+{% block title %}
+  {{ producer.name }}
+{% endblock %}
 
-</head>
-<body>
+{% block content %}
+  <div class="main">
+    <header>
+      <h1>{{ producer.name }}</h1>
+      {% if producer.logo %}
+        <img src="{{ producer.logo }}" alt="Logo producenta" />
+      {% endif %}
+    </header>
 
-  <h1>{{ producer.name }}</h1>
-  {% if producer.logo %}
-    <img src="{{ producer.logo }}" alt="Logo producenta" />
-  {% endif %}
+    <section class="producer-info">
+      <p><strong>Kraj:</strong> {{ producer.country_name }}</p>
+      <p>{{ producer.description }}</p>
+    </section>
 
-  <p><strong>Kraj:</strong> {{ producer.country_name }}</p>
-  <p>{{ producer.description }}</p>
+    <section class="producer-games">
+      <h2>Gry tego producenta:</h2>
+      <ul>
+        {% for game in games %}
+          <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
 
-  <h2>Gry tego producenta:</h2>
-  <ul>
-    {% for game in games %}
-      <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
-    {% endfor %}
-  </ul>
-
-  <a href="/">← Wróć na stronę główną</a>
-
-</body>
-</html>
+    <footer>
+      <a href="/">← Wróć na stronę główną</a>
+    </footer>
+  </div>
+{% endblock %}

@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ game.title }}</title>
-  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+{% extends "base.html" %}
+{% block title %}{{ game.title }}{% endblock %}
 
-</head>
-<body>
-
+{% block content %}
   <div class="main">
     <h1>{{ game.title }}</h1>
     <p>{{ game.description }}</p>
@@ -19,43 +13,41 @@
     {% endif %}
 
     <p><strong>Wydawca:</strong>
-  <a href="/producer/{{ game.producer_id }}">
-    {{ game.producer_name }}
-  </a>
-</p>
+      <a href="/producer/{{ game.producer_id }}">
+        {{ game.producer_name }}
+      </a>
+    </p>
 
     <p><strong>Data premiery:</strong> {{ game.release_date }}</p>
     <p><strong>Gatunek:</strong> {{ game.genre }}</p>
   </div>
 
   <h2>Osiągnięcia</h2>
-{% if achievements %}
-  <ul class="achievement-list">
-    {% for a in achievements %}
-      <li class="achievement-item">
-        <span class="achievement-title" onclick="toggleDescription('desc-{{ a.id }}')">
-          🏆 {{ a.name }} ({{ a.points }} pkt)
-        </span>
-        <div id="desc-{{ a.id }}" class="achievement-description hidden">
-          <p>{{ a.description or "Brak opisu." }}</p>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>Brak osiągnięć dla tej gry.</p>
-{% endif %}
-
+  {% if achievements %}
+    <ul class="achievement-list">
+      {% for a in achievements %}
+        <li class="achievement-item">
+          <span class="achievement-title" onclick="toggleDescription('desc-{{ a.id }}')">
+            🏆 {{ a.name }} ({{ a.points }} pkt)
+          </span>
+          <div id="desc-{{ a.id }}" class="achievement-description hidden">
+            <p>{{ a.description or "Brak opisu." }}</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Brak osiągnięć dla tej gry.</p>
+  {% endif %}
 
   <a href="/">← Wróć na stronę główną</a>
+{% endblock %}
 
+{% block scripts %}
 <script>
   function toggleDescription(id) {
     const el = document.getElementById(id);
     el.classList.toggle("hidden");
   }
 </script>
-
-
-</body>
-</html>
+{% endblock %}

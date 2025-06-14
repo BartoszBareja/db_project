@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main">
+    <p>Twoi znajomi</p>
+</div>
+
+<div class="tiles-section">
+    <h2>Lista znajomych</h2>
+    <div class="tiles-grid">
+        {% for friend in friends %}
+        <div class="tile">
+            <p>{{ friend.username }}</p>
+            <div style="color:#999; font-size:0.9rem;">Znajomi od: {{ friend.friends_since.strftime("%Y-%m-%d") }}</div>
+        </div>
+        {% endfor %}
+        {% if friends|length == 0 %}
+        <p style="text-align:center;">Nie masz jeszcze żadnych znajomych 😢</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
