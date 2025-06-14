@@ -1,0 +1,84 @@
+       <!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Not Steam{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+
+  <!-- Swiper CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+  />
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Nagłówek z paskiem wyszukiwania -->
+  <div class="main">
+    <a href="/" style="text-decoration: none; color: inherit;">
+      <p>Not Steam</p>
+    </a>
+    <div class="search-bar">
+      <input type="text" placeholder="Wyszukaj gry..." />
+      <button>Szukaj</button>
+    </div>
+  </div>
+
+  <button class="menu-toggle">☰</button>
+
+  <!-- Sidebar / menu boczne -->
+  <nav class="sidebar hidden">
+    <ul>
+      <li><a href="/">Strona główna</a></li>
+      <li><a href="#">Nowości</a></li>
+      <li><a href="#">Kategorie</a></li>
+      <li><a href="#">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <!-- Zawartość strony -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2025 Not Steam. Wszystkie prawa zastrzeżone.</p>
+      <div class="footer-links">
+        <a href="#">Regulamin</a>
+        <a href="#">Polityka prywatności</a>
+        <a href="#">Kontakt</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- Podstawowy JavaScript -->
+  <script>
+    // Menu toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+    });
+
+    // Rating stars (jeśli istnieją)
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const rating = parseInt(star.getAttribute('data-value'));
+        stars.forEach(s => {
+          s.classList.toggle('filled', parseInt(s.getAttribute('data-value')) <= rating);
+        });
+      });
+    });
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

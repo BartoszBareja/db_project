@@ -1,13 +1,17 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>O mnie</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}O mnie - Not Steam{% endblock %}
+
+{% block content %}
+  <div class="about-page">
     <h1>O mnie</h1>
-    <p>To przykładowa podstrona.</p>
-    <a href="/">Wróć</a>
-</body>
-</html>
+    <div class="about-content">
+      <p>To przykładowa podstrona aplikacji Not Steam.</p>
+      <p>Tutaj możesz umieścić informacje o sobie, o projekcie lub inne treści.</p>
+    </div>
+    
+    <div class="navigation">
+      <a href="/" class="back-link">← Wróć na stronę główną</a>
+    </div>
+  </div>
+{% endblock %}

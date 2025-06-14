@@ -1,60 +1,25 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8" />
-  <title>Not Steam - Strona Główna</title>
-  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+{% extends "base.html" %}
 
+{% block title %}Not Steam - Strona Główna{% endblock %}
 
-  <!-- Swiper CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-  />
-</head>
-<body>
-
-  <!-- Nagłówek z paskiem wyszukiwania -->
-  <div class="main">
-    <p>Not Steam</p>
-    <div class="search-bar">
-      <input type="text" placeholder="Wyszukaj gry..." />
-      <button>Szukaj</button>
-    </div>
-  </div>
-
-  <button class="menu-toggle">☰</button>
-
-<!-- Sidebar / menu boczne -->
-<nav class="sidebar hidden">
-  <ul>
-    <li><a>Strona główna</a></li>
-    <li><a>Nowości</a></li>
-    <li><a>Kategorie</a></li>
-    <li><a>Kontakt</a></li>
-  </ul>
-</nav>
-
+{% block content %}
   <div class="section_titles">
-    <h2>
-      Recommended games
-    </h2>
+    <h2>Recommended games</h2>
   </div>
 
   <!-- Karuzela 1 -->
   <div class="carousel-wrapper">
     <div class="swiper carousel1">
       <div class="swiper-wrapper">
-  {% for game in carousel_games %}
-    <div class="swiper-slide">
-      <a href="/game/{{ game.id }}">
-        <img src="./static/images/placeholder.jpg" alt="{{ game.title }}" />
-        <p>{{ game.title }}</p>
-      </a>
-    </div>
-  {% endfor %}
-</div>
-
+        {% for game in carousel_games %}
+          <div class="swiper-slide">
+            <a href="/game/{{ game.id }}">
+              <img src="./static/images/placeholder.jpg" alt="{{ game.title }}" />
+              <p>{{ game.title }}</p>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
       <div class="swiper-button-prev swiper-button-prev-1"></div>
       <div class="swiper-button-next swiper-button-next-1"></div>
       <div class="swiper-pagination swiper-pagination-1"></div>
@@ -62,9 +27,7 @@
   </div>
 
   <div class="section_titles">
-    <h2>
-      New games
-    </h2>
+    <h2>New games</h2>
   </div>
 
   <!-- Karuzela 2 -->
@@ -76,8 +39,8 @@
         <div class="swiper-slide"><img src="./static/images/placeholder3.jpg" alt="Nowość 3" /><p>Nowość 3</p></div>
         <div class="swiper-slide"><img src="./static/images/placeholder4.jpg" alt="Nowość 4" /><p>Nowość 4</p></div>
         <div class="swiper-slide"><img src="./static/images/placeholder5.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
-        <div class="swiper-slide"><img src="./static/images/placeholder6.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
-        <div class="swiper-slide"><img src="./static/images/placeholder7.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder6.jpg" alt="Nowość 6" /><p>Nowość 6</p></div>
+        <div class="swiper-slide"><img src="./static/images/placeholder7.jpg" alt="Nowość 7" /><p>Nowość 7</p></div>
       </div>
       <div class="swiper-button-prev swiper-button-prev-2"></div>
       <div class="swiper-button-next swiper-button-next-2"></div>
@@ -85,70 +48,57 @@
     </div>
   </div>
 
-
   <div>
     <h2 class="section_titles">Genres</h2>
   </div>
+  
   <!-- Kafelki poniżej karuzeli -->
-<div class="tiles-section">
-  <div class="tiles-grid">
-    <div class="tile">
-      <img src="./static/images/placeholder.jpg" alt="Tile 1">
-      <p>Tile 1</p>
-    </div>
-    <div class="tile">
-      <img src="./static/images/placeholder2.jpg" alt="Tile 2">
-      <p>Tile 2</p>
-    </div>
-    <div class="tile">
-      <img src="./static/images/placeholder3.jpg" alt="Tile 3">
-      <p>Tile 3</p>
-    </div>
-    <div class="tile">
-      <img src="./static/images/placeholder4.jpg" alt="Tile 4">
-      <p>Tile 4</p>
-    </div>
-    <div class="tile">
-      <img src="./static/images/placeholder5.jpg" alt="Tile 5">
-      <p>Tile 5</p>
-    </div>
-    <div class="tile">
-      <img src="./static/images/placeholder6.jpg" alt="Tile 6">
-      <p>Tile 6</p>
-    </div>
-    <div class="tile">
-      <img src="./static/images/placeholder7.jpg" alt="Tile 7">
-      <p>Tile 7</p>
-    </div>
-  </div>
-</div>
-
-<div class="rating-bar">
-  <p>Oceń stronę:</p>
-  <div class="stars">
-    <span class="star" data-value="1">&#9734;</span>
-    <span class="star" data-value="2">&#9734;</span>
-    <span class="star" data-value="3">&#9734;</span>
-    <span class="star" data-value="4">&#9734;</span>
-    <span class="star" data-value="5">&#9734;</span>
-  </div>
-</div>
-
-<footer class="site-footer">
-  <div class="footer-content">
-    <p>&copy; 2025 Not Steam. Wszystkie prawa zastrzeżone.</p>
-    <div class="footer-links">
-      <a href="#">Regulamin</a>
-      <a href="#">Polityka prywatności</a>
-      <a href="#">Kontakt</a>
+  <div class="tiles-section">
+    <div class="tiles-grid">
+      <div class="tile">
+        <img src="./static/images/placeholder.jpg" alt="Tile 1">
+        <p>Tile 1</p>
+      </div>
+      <div class="tile">
+        <img src="./static/images/placeholder2.jpg" alt="Tile 2">
+        <p>Tile 2</p>
+      </div>
+      <div class="tile">
+        <img src="./static/images/placeholder3.jpg" alt="Tile 3">
+        <p>Tile 3</p>
+      </div>
+      <div class="tile">
+        <img src="./static/images/placeholder4.jpg" alt="Tile 4">
+        <p>Tile 4</p>
+      </div>
+      <div class="tile">
+        <img src="./static/images/placeholder5.jpg" alt="Tile 5">
+        <p>Tile 5</p>
+      </div>
+      <div class="tile">
+        <img src="./static/images/placeholder6.jpg" alt="Tile 6">
+        <p>Tile 6</p>
+      </div>
+      <div class="tile">
+        <img src="./static/images/placeholder7.jpg" alt="Tile 7">
+        <p>Tile 7</p>
+      </div>
     </div>
   </div>
-</footer>
 
+  <div class="rating-bar">
+    <p>Oceń stronę:</p>
+    <div class="stars">
+      <span class="star" data-value="1">&#9734;</span>
+      <span class="star" data-value="2">&#9734;</span>
+      <span class="star" data-value="3">&#9734;</span>
+      <span class="star" data-value="4">&#9734;</span>
+      <span class="star" data-value="5">&#9734;</span>
+    </div>
+  </div>
+{% endblock %}
 
-  <!-- Swiper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
+{% block extra_scripts %}
   <!-- Inicjalizacja karuzel -->
   <script>
     new Swiper('.carousel1', {
@@ -178,24 +128,5 @@
         clickable: true,
       },
     });
-
-    const stars = document.querySelectorAll('.star');
-  stars.forEach(star => {
-    star.addEventListener('click', () => {
-      const rating = parseInt(star.getAttribute('data-value'));
-      stars.forEach(s => {
-        s.classList.toggle('filled', parseInt(s.getAttribute('data-value')) <= rating);
-      });
-    });
-  });
-
-  const menuToggle = document.querySelector('.menu-toggle');
-  const sidebar = document.querySelector('.sidebar');
-
-  menuToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('hidden');
-  });
-</script>
-
-</body>
-</html>
+  </script>
+{% endblock %}

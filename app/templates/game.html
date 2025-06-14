@@ -1,61 +1,83 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ game.title }}</title>
-  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+{% extends "base.html" %}
 
-</head>
-<body>
+{% block title %}{{ game.title }} - Not Steam{% endblock %}
 
-  <div class="main">
-    <h1>{{ game.title }}</h1>
-    <p>{{ game.description }}</p>
+{% block content %}
+  <div class="game-detail">
+    <div class="game-header">
+      <h1>{{ game.title }}</h1>
+      <p class="game-description">{{ game.description }}</p>
+    </div>
 
-    {% if game.image_url %}
-      <img src="{{ game.image_url }}" alt="{{ game.title }}" />
-    {% else %}
-      <img src="/static/images/placeholder.jpg" alt="Brak okładki">
+    <div class="game-content">
+      <div class="game-image">
+        {% if game.image_url %}
+          <img src="{{ game.image_url }}" alt="{{ game.title }}" />
+        {% else %}
+          <img src="/static/images/placeholder.jpg" alt="Brak okładki">
+        {% endif %}
+      </div>
+
+      <div class="game-info">
+        <p><strong>Wydawca:</strong>
+          <a href="/producer/{{ game.producer_id }}">
+            {{ game.producer_name }}
+          </a>
+        </p>
+        <p><strong>Data premiery:</strong> {{ game.release_date }}</p>
+        {% if game.genre %}
+          <p><strong>Gatunek:</strong> {{ game.genre }}</p>
+        {% endif %}
+        {% if game.price %}
+          <p><strong>Cena:</strong> {{ game.price }} zł</p>
+        {% endif %}
+        {% if game.pegi_rating %}
+          <p><strong>Ocena PEGI:</strong> {{ game.pegi_rating }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if game.min_cpu or game.min_gpu or game.min_ram or game.min_disk %}
+      <div class="system-requirements">
+        <h3>Wymagania systemowe</h3>
+        {% if game.min_cpu %}<p><strong>Procesor:</strong> {{ game.min_cpu }}</p>{% endif %}
+        {% if game.min_gpu %}<p><strong>Karta graficzna:</strong> {{ game.min_gpu }}</p>{% endif %}
+        {% if game.min_ram %}<p><strong>RAM:</strong> {{ game.min_ram }}</p>{% endif %}
+        {% if game.min_disk %}<p><strong>Miejsce na dysku:</strong> {{ game.min_disk }}</p>{% endif %}
+      </div>
     {% endif %}
 
-    <p><strong>Wydawca:</strong>
-  <a href="/producer/{{ game.producer_id }}">
-    {{ game.producer_name }}
-  </a>
-</p>
+    <div class="achievements-section">
+      <h2>Osiągnięcia</h2>
+      {% if achievements %}
+        <ul class="achievement-list">
+          {% for a in achievements %}
+            <li class="achievement-item">
+              <span class="achievement-title" onclick="toggleDescription('desc-{{ a.id }}')">
+                🏆 {{ a.name }} ({{ a.points }} pkt)
+              </span>
+              <div id="desc-{{ a.id }}" class="achievement-description hidden">
+                <p>{{ a.description or "Brak opisu." }}</p>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Brak osiągnięć dla tej gry.</p>
+      {% endif %}
+    </div>
 
-    <p><strong>Data premiery:</strong> {{ game.release_date }}</p>
-    <p><strong>Gatunek:</strong> {{ game.genre }}</p>
+    <div class="navigation">
+      <a href="/" class="back-link">← Wróć na stronę główną</a>
+    </div>
   </div>
+{% endblock %}
 
-  <h2>Osiągnięcia</h2>
-{% if achievements %}
-  <ul class="achievement-list">
-    {% for a in achievements %}
-      <li class="achievement-item">
-        <span class="achievement-title" onclick="toggleDescription('desc-{{ a.id }}')">
-          🏆 {{ a.name }} ({{ a.points }} pkt)
-        </span>
-        <div id="desc-{{ a.id }}" class="achievement-description hidden">
-          <p>{{ a.description or "Brak opisu." }}</p>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>Brak osiągnięć dla tej gry.</p>
-{% endif %}
-
-
-  <a href="/">← Wróć na stronę główną</a>
-
-<script>
-  function toggleDescription(id) {
-    const el = document.getElementById(id);
-    el.classList.toggle("hidden");
-  }
-</script>
-
-
-</body>
-</html>
+{% block extra_scripts %}
+  <script>
+    function toggleDescription(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle("hidden");
+    }
+  </script>
+{% endblock %}

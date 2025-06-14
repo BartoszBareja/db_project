@@ -1,29 +1,47 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ producer.name }}</title>
-  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+{% extends "base.html" %}
 
-</head>
-<body>
+{% block title %}{{ producer.name }} - Not Steam{% endblock %}
 
-  <h1>{{ producer.name }}</h1>
-  {% if producer.logo %}
-    <img src="{{ producer.logo }}" alt="Logo producenta" />
-  {% endif %}
+{% block content %}
+  <div class="producer-detail">
+    <div class="producer-header">
+      <h1>{{ producer.name }}</h1>
+      {% if producer.logo %}
+        <div class="producer-logo">
+          <img src="{{ producer.logo }}" alt="Logo producenta" />
+        </div>
+      {% endif %}
+    </div>
 
-  <p><strong>Kraj:</strong> {{ producer.country_name }}</p>
-  <p>{{ producer.description }}</p>
+    <div class="producer-info">
+      <p><strong>Kraj:</strong> {{ producer.country_name }}</p>
+      {% if producer.description %}
+        <div class="producer-description">
+          <p>{{ producer.description }}</p>
+        </div>
+      {% endif %}
+    </div>
 
-  <h2>Gry tego producenta:</h2>
-  <ul>
-    {% for game in games %}
-      <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
-    {% endfor %}
-  </ul>
+    <div class="producer-games">
+      <h2>Gry tego producenta:</h2>
+      {% if games %}
+        <div class="games-grid">
+          {% for game in games %}
+            <div class="game-tile">
+              <a href="/game/{{ game.id }}">
+                <img src="/static/images/placeholder.jpg" alt="{{ game.title }}" />
+                <p>{{ game.title }}</p>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Brak gier dla tego producenta.</p>
+      {% endif %}
+    </div>
 
-  <a href="/">← Wróć na stronę główną</a>
-
-</body>
-</html>
+    <div class="navigation">
+      <a href="/" class="back-link">← Wróć na stronę główną</a>
+    </div>
+  </div>
+{% endblock %}
