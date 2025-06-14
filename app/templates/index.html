@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Not Steam - Strona Główna</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- Swiper CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+  />
+</head>
+<body>
+
+  <div class="main">
+    <p>Not Steam</p>
+    <div class="search-bar">
+      <input type="text" placeholder="Wyszukaj gry..." />
+      <button>Szukaj</button>
+    </div>
+  </div>
+
+  <div class="carousel-wrapper">
+    <div class="swiper carousel1">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="/static/images/placeholder.jpg" alt="Gra 1" /><p>Gra 1</p></div>
+        <div class="swiper-slide"><img src="/static/images/placeholder2.jpg" alt="Gra 2" /><p>Gra 2</p></div>
+        <div class="swiper-slide"><img src="/static/images/placeholder3.jpg" alt="Gra 3" /><p>Gra 3</p></div>
+        <div class="swiper-slide"><img src="/static/images/placeholder4.jpg" alt="Gra 4" /><p>Gra 4</p></div>
+      </div>
+      <div class="swiper-button-prev swiper-button-prev-1"></div>
+      <div class="swiper-button-next swiper-button-next-1"></div>
+      <div class="swiper-pagination swiper-pagination-1"></div>
+    </div>
+  </div>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <script>
+    const swiper1 = new Swiper('.carousel1', {
+      slidesPerView: 3,
+      spaceBetween: 20,
+      loop: true,
+      navigation: {
+        nextEl: '.swiper-button-next-1',
+        prevEl: '.swiper-button-prev-1',
+      },
+      pagination: {
+        el: '.swiper-pagination-1',
+        clickable: true,
+      },
+    });
+  </script>
+
+</body>
+</html>
