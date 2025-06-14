@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ producer.name }}</title>
+  <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
+
+</head>
+<body>
+
+  <h1>{{ producer.name }}</h1>
+  {% if producer.logo %}
+    <img src="{{ producer.logo }}" alt="Logo producenta" />
+  {% endif %}
+
+  <p><strong>Kraj:</strong> {{ producer.country_name }}</p>
+  <p>{{ producer.description }}</p>
+
+  <h2>Gry tego producenta:</h2>
+  <ul>
+    {% for game in games %}
+      <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <a href="/">← Wróć na stronę główną</a>
+
+</body>
+</html>

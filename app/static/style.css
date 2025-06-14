@@ -316,3 +316,18 @@ body {
 .footer-links a:hover {
   color: #fff;
 }
+
+.achievement-title {
+  cursor: pointer;
+  font-weight: bold;
+  color: #007acc;
+}
+
+.achievement-description {
+  margin-left: 15px;
+  margin-top: 5px;
+}
+
+.hidden {
+  display: none;
+}
