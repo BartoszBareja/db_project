@@ -12,6 +12,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.models import User  # <- Twój model użytkownika
 
 from app.database import database, SessionLocal, get_db
 from app.models import User, Message, Game, Library
@@ -290,8 +291,8 @@ async def genre_page(request: Request, genre_id: int, current_user: Optional[dic
 # Routes - Game Management
 from fastapi import HTTPException  # dodaj ten import, jeśli go nie ma
 
-@app.get("/game/{game_id}", response_class=HTMLResponse, )
-async def game_detail(request: Request, game_id: int,  current_user: Optional[dict] = Depends(get_optional_user)):
+@app.get("/game/{game_id}", response_class=HTMLResponse)
+async def game_detail(request: Request, game_id: int, current_user: Optional[dict] = Depends(get_optional_user)):
     """Display game details"""
 
     # Pobierz dane gry z producentem
@@ -333,11 +334,12 @@ async def game_detail(request: Request, game_id: int,  current_user: Optional[di
     """
     ratings = await database.fetch_all(ratings_query, values={"game_id": game_id})
 
-    # Pobierz zalogowanego użytkownika
-    user = request.state.user
-
     library_friends = []
     wishlist_friends = []
+    in_library = False
+    in_wishlist = False
+
+    user = request.state.user  # lub current_user, w zależności jak masz to ustawione
 
     if user:
         # Pobierz ID znajomych
@@ -376,17 +378,38 @@ async def game_detail(request: Request, game_id: int,  current_user: Optional[di
                 wishlist_query, values={"game_id": game_id, "friend_ids": friends_ids}
             )
 
+        # Sprawdź, czy użytkownik ma grę w bibliotece
+        in_library_query = """
+            SELECT 1 FROM library
+            WHERE user_id = :user_id AND game_id = :game_id
+            LIMIT 1
+        """
+        in_library_result = await database.fetch_one(in_library_query, values={"user_id": user.id, "game_id": game_id})
+        in_library = in_library_result is not None
+
+        # Sprawdź, czy użytkownik ma grę na wishlistcie
+        in_wishlist_query = """
+            SELECT 1 FROM wishlist
+            WHERE user_id = :user_id AND game_id = :game_id
+            LIMIT 1
+        """
+        in_wishlist_result = await database.fetch_one(in_wishlist_query, values={"user_id": user.id, "game_id": game_id})
+        in_wishlist = in_wishlist_result is not None
+
     return templates.TemplateResponse("game.html", {
         "request": request,
         "game": game,
         "achievements": achievements,
         "ratings": ratings,
         "genres": genre_list,
-        "user": user,
         "current_user": current_user,
+        "user": current_user,  # <--- dodaj
         "library_friends": [f["username"] for f in library_friends] if library_friends else [],
-        "wishlist_friends": [f["username"] for f in wishlist_friends] if wishlist_friends else []
+        "wishlist_friends": [f["username"] for f in wishlist_friends] if wishlist_friends else [],
+        "in_library": in_library,
+        "in_wishlist": in_wishlist,
     })
+
 
 @app.post("/game/{game_id}/add_to_library")
 async def add_to_library(game_id: int, access_token: Optional[str] = Cookie(None)):
@@ -501,27 +524,22 @@ async def user_library(request: Request, access_token: str = Cookie(None)):
         "time": int(datetime.utcnow().timestamp())
     })
 
-
 @app.get("/profile", response_class=HTMLResponse)
 async def profile_page(
-        request: Request,
-        username: Optional[str] = Query(None),
-        current_user: dict = Depends(get_current_user)
+    request: Request,
+    username: Optional[str] = Query(None),
+    current_user: dict = Depends(get_current_user)
 ):
-    """Display user profile"""
     if username:
         user = await database.fetch_one(
             "SELECT * FROM users WHERE username = :username",
             {"username": username}
         )
-        if not user:
-            return HTMLResponse("<h1>Użytkownik nie istnieje.</h1>", status_code=404)
     else:
         if not current_user:
             return RedirectResponse("/login", status_code=302)
         user = current_user
 
-    # Get user's wishlist
     wishlist_query = """
     SELECT g.id, g.title
     FROM wishlist w
@@ -532,65 +550,50 @@ async def profile_page(
     wishlist = await database.fetch_all(wishlist_query, {"user_id": user["id"]})
     achievements = await get_user_achievements(user["id"])
 
-    return templates.TemplateResponse("profile.html", {
-        "request": request,
-        "user": user,
-        "wishlist": wishlist,
-        "achievements": achievements,
-        "current_user": current_user,
-    })
-
-@app.get("/profile/{user_id}", response_class=HTMLResponse)
-async def user_profile_page(
-    request: Request,
-    user_id: int,
-    current_user: dict = Depends(get_current_user)
-):
-    user = await database.fetch_one("SELECT * FROM users WHERE id = :id", {"id": user_id})
-    if not user:
-        raise HTTPException(status_code=404, detail="Użytkownik nie istnieje.")
-
-    # Pobierz znajomych użytkownika
+    # Pobierz znajomych
     friends_query = """
     SELECT u.id, u.username
     FROM friends f
     JOIN users u ON (u.id = CASE WHEN f.user1_id = :user_id THEN f.user2_id ELSE f.user1_id END)
     WHERE :user_id IN (f.user1_id, f.user2_id)
     """
-    friends = await database.fetch_all(friends_query, {"user_id": user_id})
+    friends = await database.fetch_all(friends_query, {"user_id": user["id"]})
 
-    # Sprawdź, czy current_user jest już znajomym z user_id
-    is_friend_query = """
-    SELECT 1 FROM friends
-    WHERE 
-        (user1_id = :current_id AND user2_id = :target_id)
-        OR 
-        (user1_id = :target_id AND user2_id = :current_id)
-    """
-    is_friend = await database.fetch_one(is_friend_query, {
-        "current_id": current_user["id"],
-        "target_id": user_id
-    })
-
-    wishlist_query = """
-    SELECT g.id, g.title
-    FROM wishlist w
-    JOIN games g ON w.game_id = g.id
-    WHERE w.user_id = :user_id
-    ORDER BY w.added_at DESC
-    """
-    wishlist = await database.fetch_all(wishlist_query, {"user_id": user_id})
-    achievements = await get_user_achievements(user_id)
+    # Sprawdź czy current_user jest znajomym (jeśli zalogowany)
+    is_friend = False
+    if current_user and current_user["id"] != user["id"]:
+        is_friend_query = """
+        SELECT 1 FROM friends
+        WHERE 
+            (user1_id = :current_id AND user2_id = :target_id)
+            OR 
+            (user1_id = :target_id AND user2_id = :current_id)
+        """
+        res = await database.fetch_one(is_friend_query, {
+            "current_id": current_user["id"],
+            "target_id": user["id"]
+        })
+        is_friend = bool(res)
 
     return templates.TemplateResponse("profile.html", {
         "request": request,
         "user": user,
-        "friends": friends,
         "wishlist": wishlist,
         "achievements": achievements,
+        "friends": friends,
         "current_user": current_user,
-        "is_friend": bool(is_friend)
+        "is_friend": is_friend
     })
+
+
+@app.get("/profile/{username}", response_class=HTMLResponse)
+async def profile_by_username(
+    request: Request,
+    username: str,
+    current_user: dict = Depends(get_current_user)
+):
+    # po prostu przekieruj do /profile?username=xxx
+    return RedirectResponse(url=f"/profile?username={username}", status_code=302)
 
 @app.post("/friends/add/{user_id}")
 async def add_friend(user_id: int, current_user: dict = Depends(get_current_user)):
@@ -613,7 +616,7 @@ async def add_friend(user_id: int, current_user: dict = Depends(get_current_user
     return RedirectResponse(url=f"/profile/{user_id}", status_code=303)
 
 
-@app.get("/profile/edit")
+@app.get("/profile_edit")
 async def edit_profile_get(request: Request, current_user: User = Depends(get_current_user)):
     """Display profile edit form"""
     return templates.TemplateResponse("edit_profile.html", {

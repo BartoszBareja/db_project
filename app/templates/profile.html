@@ -3,6 +3,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="/static/styles/profile.css?v={{ time }}" />
+
 <div class="profile-container">
   <div class="profile-header">
     <img class="profile-avatar" src="{{ user.profile_picture or '/static/default_avatar.png' }}" alt="Avatar użytkownika">
@@ -10,7 +11,6 @@
   </div>
 
   <div class="profile-info">
-    <p><span>Email:</span> {{ user.email }}</p>
     <p><span>Opis:</span>
       {% if user.profile_description %}
         {{ user.profile_description }}
@@ -18,68 +18,70 @@
         <span class="empty">Brak opisu</span>
       {% endif %}
     </p>
-    <p><span>Kraj:</span>
-      {% if user.country_id %}
-        {{ user.country_id }}
-      {% else %}
-        <span class="empty">Nie podano</span>
-      {% endif %}
-    </p>
-    <p><span>Data urodzenia:</span>
-      {% if user.birth_date %}
-        {{ user.birth_date }}
-      {% else %}
-        <span class="empty">Nie podano</span>
-      {% endif %}
-    </p>
-    <p><span>Status:</span> {{ user.status or 'Brak statusu' }}</p>
-    <p><span>Saldo portfela:</span> {{ user.wallet_balance }}</p>
+
+    {% if current_user %}
+      <p><span>Email:</span> {{ user.email }}</p>
+      <p><span>Kraj:</span>
+        {% if user.country_id %}
+          {{ user.country_id }}
+        {% else %}
+          <span class="empty">Nie podano</span>
+        {% endif %}
+      </p>
+      <p><span>Data urodzenia:</span>
+        {% if user.birth_date %}
+          {{ user.birth_date }}
+        {% else %}
+          <span class="empty">Nie podano</span>
+        {% endif %}
+      </p>
+      <p><span>Status:</span> {{ user.status or 'Brak statusu' }}</p>
+      <p><span>Saldo portfela:</span> {{ user.wallet_balance }}</p>
+    {% endif %}
   </div>
 
-  {% if current_user and current_user.id != user.id %}
-  {% if not is_friend %}
-    <form action="/friends/add/{{ user.id }}" method="post">
-      <button type="submit" class="add-friend-btn">➕ Dodaj do znajomych</button>
-    </form>
-  {% else %}
-    <p class="already-friends">✔️ Jesteście już znajomymi</p>
+  {% if current_user %}
+    {% if current_user['id'] != user['id'] %}
+      {% if not is_friend %}
+        <form action="/friends/add/{{ user.username }}" method="post">
+          <button type="submit" class="add-friend-btn">➕ Dodaj do znajomych</button>
+        </form>
+      {% else %}
+        <p class="already-friends">✔️ Jesteście już znajomymi</p>
+      {% endif %}
+    {% else %}
+      <a href="/profile_edit" class="edit-profile-btn">Edytuj profil</a>
+    {% endif %}
   {% endif %}
+</div>
+
+{% if current_user %}
+  <div class="friends-section">
+    <h2>Znajomi</h2>
+    {% if friends and friends|length > 0 %}
+      <ul class="friend-list">
+        {% for friend in friends %}
+          <li><a href="/profile/{{ friend.username }}">{{ friend.username }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Brak znajomych.</p>
+    {% endif %}
+  </div>
+
+  <div class="wishlist">
+    <h2>Wishlist</h2>
+    {% if wishlist and wishlist|length > 0 %}
+      <ul>
+        {% for game in wishlist %}
+          <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Brak gier na liście życzeń.</p>
+    {% endif %}
+  </div>
 {% endif %}
-
-
-  {% if current_user and current_user.id == user.id %}
-    <a href="/profile/edit" class="edit-profile-btn">Edytuj profil</a>
-  {% endif %}
-</div>
-
-<div class="friends-section">
-  <h2>Znajomi</h2>
-  {% if friends and friends|length > 0 %}
-    <ul class="friend-list">
-      {% for friend in friends %}
-        <li>
-          <a href="/profile/{{ friend.id }}">{{ friend.username }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Brak znajomych.</p>
-  {% endif %}
-</div>
-
-
-<div class="wishlist">
-  <h2>Wishlist</h2>
-  {% if wishlist and wishlist|length > 0 %}
-    <ul>
-      {% for game in wishlist %}
-        <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Brak gier na liście życzeń.</p>
-  {% endif %}
-</div>
 
 <h2>Osiągnięcia użytkownika</h2>
 {% if achievements %}

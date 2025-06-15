@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Nie znaleziono{% endblock %}
+{% block title %}Nie znaleziono (OwO) 🐾{% endblock %}
 
 {% block content %}
-  <h1>404 - Strona nie została znaleziona</h1>
-  <p>Wygląda na to, że ta strona nie istnieje.</p>
-  <a href="/">← Wróć na stronę główną</a>
+<link rel="stylesheet" href="/static/styles/404.css?v={{ time }}" />
+
+<div class="not-found-container">
+  <h1>404 - Strona nie została znaleziona UwU</h1>
+  <p>Wygląda na to, że ta strona nie istnieje... OwO</p>
+
+  <a href="/" class="back-home">← Wróć na stronę główną</a>
+</div>
 {% endblock %}

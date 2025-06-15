@@ -3,43 +3,43 @@
 {% block title %}Edytuj profil - {{ user.username }}{% endblock %}
 
 {% block content %}
-<div class="profile-container">
-  <h1>Edytuj profil</h1>
-  <form method="post" action="/profile/edit">
-    <label>Username:<br>
+<link rel="stylesheet" href="/static/styles/edit.css?v={{ time }}" />
+<div class="profile-container auth-container">
+  <h1 class="auth-title">Edytuj profil</h1>
+  <form method="post" action="/profile/edit" class="auth-form">
+    <label>Username:
       <input type="text" name="username" value="{{ user.username }}" required>
-    </label><br><br>
+    </label>
 
-    <label>Email:<br>
+    <label>Email:
       <input type="email" name="email" value="{{ user.email }}" required>
-    </label><br><br>
+    </label>
 
-    <label>Opis:<br>
+    <label>Opis:
       <textarea name="profile_description" rows="4">{{ user.profile_description or "" }}</textarea>
-    </label><br><br>
+    </label>
 
-    <label>Zdjęcie profilowe (URL):<br>
+    <label>Zdjęcie profilowe (URL):
       <input type="url" name="profile_picture" value="{{ user.profile_picture or "" }}">
-    </label><br><br>
+    </label>
 
-    <label>Data urodzenia:<br>
+    <label>Data urodzenia:
       <input type="date" name="birth_date" value="{{ user.birth_date }}">
-    </label><br><br>
+    </label>
 
-    <label>Country ID:<br>
+    <label>Country ID:
       <input type="number" name="country_id" value="{{ user.country_id or '' }}">
-    </label><br><br>
+    </label>
 
-    <label>Status:<br>
+    <label>Status:
       <select name="status" required>
         <option value="offline" {% if user.status == 'offline' %}selected{% endif %}>Offline</option>
         <option value="online" {% if user.status == 'online' %}selected{% endif %}>Online</option>
         <option value="busy" {% if user.status == 'busy' %}selected{% endif %}>Busy</option>
-        <!-- Dodaj inne statusy jeśli masz -->
       </select>
-    </label><br><br>
+    </label>
 
-    <button type="submit">Zapisz zmiany</button>
+    <button type="submit" class="auth-submit">Zapisz zmiany</button>
   </form>
 </div>
 {% endblock %}

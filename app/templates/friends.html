@@ -12,7 +12,7 @@
             {% for friend in friends %}
             <div class="tile friend-tile">
                 <p><strong>{{ friend.username }}</strong></p>
-                <button class="chat-button" onclick="openChat({{ friend.id }}, '{{ friend.username }}')">💬 Czat</button>
+                <button class="chat-button" onclick="toggleChat({{ friend.id }}, '{{ friend.username }}')">💬 Czat</button>
 
                 <div id="chat-box-{{ friend.id }}" class="chat-box" style="display:none;">
                     <div id="messages-{{ friend.id }}" class="message-list"></div>
@@ -31,11 +31,23 @@
 
 <script>
     const currentUserId = {{ current_user.id }};
+    const friendUsernames = {
+        {% for friend in friends %}
+            {{ friend.id }}: "{{ friend.username }}",
+        {% endfor %}
+    };
+
     const sockets = {};
 
-    function openChat(friendId, friendName) {
+    function toggleChat(friendId, friendName) {
         const chatBox = document.getElementById(`chat-box-${friendId}`);
         const messagesDiv = document.getElementById(`messages-${friendId}`);
+
+        // Jeśli chat jest widoczny - ukryj i zakończ
+        if (chatBox.style.display === 'block') {
+            chatBox.style.display = 'none';
+            return;
+        }
 
         // Ukryj inne czaty
         document.querySelectorAll('[id^="chat-box-"]').forEach(div => {
@@ -51,7 +63,10 @@
             .then(history => {
                 history.forEach(msg => {
                     const p = document.createElement('p');
-                    p.textContent = `${msg.sender}: ${msg.content}`;
+                    const date = new Date(msg.timestamp);
+                    const timeStr = date.toLocaleString();
+                    const senderLabel = (msg.sender_id === currentUserId) ? "Ty" : friendUsernames[msg.sender_id] || "Znajomy";
+                    p.textContent = `${senderLabel} [${timeStr}]: ${msg.content}`;
                     messagesDiv.appendChild(p);
                 });
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -63,9 +78,11 @@
 
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                const senderLabel = (data.sender_id === currentUserId) ? "Ty" : "Znajomy";
+                const senderLabel = (data.sender_id === currentUserId) ? "Ty" : friendUsernames[data.sender_id] || "Znajomy";
+                const date = new Date(data.timestamp);
+                const timeStr = date.toLocaleString();
                 const p = document.createElement('p');
-                p.textContent = `${senderLabel}: ${data.content}`;
+                p.textContent = `${senderLabel} [${timeStr}]: ${data.content}`;
                 messagesDiv.appendChild(p);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             };
@@ -88,8 +105,10 @@
         if (msg && sockets[friendId] && sockets[friendId].readyState === WebSocket.OPEN) {
             sockets[friendId].send(msg);
             const messagesDiv = document.getElementById(`messages-${friendId}`);
+            const date = new Date();
+            const timeStr = date.toLocaleString();
             const p = document.createElement('p');
-            p.textContent = `Ty: ${msg}`;
+            p.textContent = `Ty [${timeStr}]: ${msg}`;
             messagesDiv.appendChild(p);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             input.value = '';
