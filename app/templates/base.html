@@ -2,6 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Not Steam - Strona Główna{% endblock %}</title>
   <link rel="stylesheet" href="/static/style.css?v={{ time }}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -9,147 +10,141 @@
 <body>
 
   <!-- Nagłówek z paskiem wyszukiwania -->
-  <div class="main">
-    <p>GameZone</p>
+  <header class="main">
+    <h1 class="site-title">GameZone</h1>
 
     <div class="search-bar">
-  <input type="text" id="searchInput" placeholder="Szukaj gier lub użytkowników...">
-  <div id="searchResults" class="search-results hidden"></div>
-</div>
+      <input type="search" id="searchInput" placeholder="Szukaj gier lub użytkowników..." aria-label="Szukaj gier lub użytkowników" autocomplete="off" />
+      <div id="searchResults" class="search-results hidden" role="listbox" aria-live="polite"></div>
+    </div>
 
+    <div class="user-info">
+      {% if current_user %}
+        <span class="username" aria-label="Zalogowany użytkownik">👤 {{ current_user.username }}</span>
+        <a href="/logout" class="logout-button" role="button">Wyloguj</a>
+      {% else %}
+        <a href="/login" class="auth-button" role="button">Zaloguj</a>
+        <a href="/register" class="auth-button" role="button">Rejestracja</a>
+      {% endif %}
+    </div>
+  </header>
 
-    {% if current_user %}
-      <div class="user-info">
-        <span class="username">👤 {{ current_user.username }}</span>
-        <a href="/logout" class="logout-button">Wyloguj</a>
-      </div>
-    {% else %}
-      <div class="user-info">
-        <a href="/login" class="auth-button">Zaloguj</a>
-        <a href="/register" class="auth-button">Rejestracja</a>
-      </div>
-    {% endif %}
-  </div>
-
-  <button class="menu-toggle">☰</button>
+  <button class="menu-toggle" aria-label="Przełącz menu">☰</button>
 
   <!-- Sidebar / menu boczne -->
-<nav class="sidebar hidden">
-  <ul>
-    <li><a href="/">Strona główna</a></li>
-    <li><a href="/friends">Znajomi</a></li>
-    <li><a href="/library">Biblioteka</a></li>
-    {% if current_user %}
-      <li><a href="/profile">Profil</a></li>
-      <li><a href="/logout">Wyloguj</a></li>
-    {% else %}
-      <li><a href="/login">Zaloguj się</a></li>
-      <li><a href="/register">Rejestracja</a></li>
-    {% endif %}
-  </ul>
-</nav>
+  <nav class="sidebar hidden" aria-label="Menu nawigacyjne">
+    <ul>
+      <li><a href="/">Strona główna</a></li>
+      <li><a href="/friends">Znajomi</a></li>
+      <li><a href="/library">Biblioteka</a></li>
+      {% if current_user %}
+        <li><a href="/profile">Profil</a></li>
+        <li><a href="/logout">Wyloguj</a></li>
+      {% else %}
+        <li><a href="/login">Zaloguj się</a></li>
+        <li><a href="/register">Rejestracja</a></li>
+      {% endif %}
+    </ul>
+  </nav>
 
-
-  {% block content %}{% endblock %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
 
   <footer class="site-footer">
     <div class="footer-content">
       <p>&copy; 2025 Not Steam. Wszystkie prawa zastrzeżone.</p>
-      <div class="footer-links">
+      <nav class="footer-links" aria-label="Linki stopki">
         <a href="#">Regulamin</a>
         <a href="#">Polityka prywatności</a>
         <a href="#">Kontakt</a>
-      </div>
+      </nav>
     </div>
   </footer>
 
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
 
-    console.log('menuToggle:', menuToggle);
-    console.log('sidebar:', sidebar);
+      if (!menuToggle || !sidebar) return;
 
-    if (!menuToggle || !sidebar) return;
-
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-    });
-
-    const input = document.getElementById('searchInput');
-    const resultsBox = document.getElementById('searchResults');
-
-    if (input && resultsBox) {
-      input.addEventListener('blur', () => {
-        setTimeout(() => {
-          resultsBox.style.display = 'none';
-        }, 150);
+      menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
       });
 
-      input.addEventListener('focus', () => {
-        if (resultsBox.innerHTML.trim() !== '') {
-          resultsBox.style.display = 'block';
-        }
-      });
+      const input = document.getElementById('searchInput');
+      const resultsBox = document.getElementById('searchResults');
 
-      input.addEventListener('input', async () => {
-        const query = input.value.trim();
-        if (query.length < 2) {
-          resultsBox.style.display = 'none';
-          return;
-        }
+      if (input && resultsBox) {
+        input.addEventListener('blur', () => {
+          setTimeout(() => {
+            resultsBox.style.display = 'none';
+          }, 150);
+        });
 
-        try {
-          const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
-          if (!res.ok) throw new Error('Błąd sieci');
-          const data = await res.json();
-
-          let html = '';
-
-          if (data.games.length > 0) {
-            html += `<strong>Gry:</strong><br>`;
-            data.games.forEach(game => {
-              html += `<a href="/game/${game.id}">${game.title}</a><br>`;
-            });
+        input.addEventListener('focus', () => {
+          if (resultsBox.innerHTML.trim() !== '') {
+            resultsBox.style.display = 'block';
           }
+        });
 
-          if (data.users.length > 0) {
-            html += `<strong>Użytkownicy:</strong><br>`;
-            data.users.forEach(user => {
-              html += `<a href="/profile?username=${encodeURIComponent(user.username)}">${user.username}</a><br>`;
-            });
-          }
-
-          if (!html) {
-            html = '<em>Brak wyników</em>';
-          }
-
-          resultsBox.innerHTML = html;
-          resultsBox.style.display = 'block';
-
-        } catch (err) {
-          resultsBox.innerHTML = '<em>Błąd podczas wyszukiwania</em>';
-          resultsBox.style.display = 'block';
-        }
-      });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
+        input.addEventListener('input', async () => {
           const query = input.value.trim();
-          if (query.length > 0) {
-            window.location.href = `/profile?q=${encodeURIComponent(query)}`;
+          if (query.length < 2) {
+            resultsBox.style.display = 'none';
+            return;
           }
-        }
-      });
-    }
-  });
-</script>
 
+          try {
+            const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+            if (!res.ok) throw new Error('Błąd sieci');
+            const data = await res.json();
+
+            let html = '';
+
+            if (data.games.length > 0) {
+              html += `<strong>Gry:</strong><br>`;
+              data.games.forEach(game => {
+                html += `<a href="/game/${game.id}">${game.title}</a><br>`;
+              });
+            }
+
+            if (data.users.length > 0) {
+              html += `<strong>Użytkownicy:</strong><br>`;
+              data.users.forEach(user => {
+                html += `<a href="/profile?username=${encodeURIComponent(user.username)}">${user.username}</a><br>`;
+              });
+            }
+
+            if (!html) {
+              html = '<em>Brak wyników</em>';
+            }
+
+            resultsBox.innerHTML = html;
+            resultsBox.style.display = 'block';
+
+          } catch (err) {
+            resultsBox.innerHTML = '<em>Błąd podczas wyszukiwania</em>';
+            resultsBox.style.display = 'block';
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = input.value.trim();
+            if (query.length > 0) {
+              window.location.href = `/profile?q=${encodeURIComponent(query)}`;
+            }
+          }
+        });
+      }
+    });
+  </script>
 
   {% block scripts %}{% endblock %}
 
