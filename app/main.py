@@ -71,6 +71,21 @@ async def get_current_user(access_token: Optional[str] = Cookie(None)):
     except JWTError:
         return None
 
+async def get_optional_user(access_token: Optional[str] = Cookie(None)):
+    if not access_token:
+        return None
+    try:
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            return None
+        user = await database.fetch_one(
+            "SELECT * FROM users WHERE username = :username",
+            {"username": username}
+        )
+        return dict(user) if user else None
+    except JWTError:
+        return None
 
 async def get_user_achievements(user_id: int):
     """Get user achievements based on owned games"""
@@ -248,7 +263,7 @@ async def homepage(request: Request, access_token: str = Cookie(default=None)):
 
 
 @app.get("/genre/{genre_id}", response_class=HTMLResponse)
-async def genre_page(request: Request, genre_id: int):
+async def genre_page(request: Request, genre_id: int, current_user: Optional[dict] = Depends(get_optional_user)):
     """Display games by genre"""
     genre = await database.fetch_one("SELECT * FROM genres WHERE id = :id", {"id": genre_id})
     if not genre:
@@ -266,15 +281,17 @@ async def genre_page(request: Request, genre_id: int):
     return templates.TemplateResponse("genre.html", {
         "request": request,
         "genre": genre,
-        "games": games
+        "games": games,
+        "current_user": current_user
     })
+
 
 
 # Routes - Game Management
 from fastapi import HTTPException  # dodaj ten import, jeśli go nie ma
 
-@app.get("/game/{game_id}", response_class=HTMLResponse)
-async def game_detail(request: Request, game_id: int):
+@app.get("/game/{game_id}", response_class=HTMLResponse, )
+async def game_detail(request: Request, game_id: int,  current_user: Optional[dict] = Depends(get_optional_user)):
     """Display game details"""
 
     # Pobierz dane gry z producentem
@@ -366,6 +383,7 @@ async def game_detail(request: Request, game_id: int):
         "ratings": ratings,
         "genres": genre_list,
         "user": user,
+        "current_user": current_user,
         "library_friends": [f["username"] for f in library_friends] if library_friends else [],
         "wishlist_friends": [f["username"] for f in wishlist_friends] if wishlist_friends else []
     })
@@ -541,6 +559,19 @@ async def user_profile_page(
     """
     friends = await database.fetch_all(friends_query, {"user_id": user_id})
 
+    # Sprawdź, czy current_user jest już znajomym z user_id
+    is_friend_query = """
+    SELECT 1 FROM friends
+    WHERE 
+        (user1_id = :current_id AND user2_id = :target_id)
+        OR 
+        (user1_id = :target_id AND user2_id = :current_id)
+    """
+    is_friend = await database.fetch_one(is_friend_query, {
+        "current_id": current_user["id"],
+        "target_id": user_id
+    })
+
     wishlist_query = """
     SELECT g.id, g.title
     FROM wishlist w
@@ -558,7 +589,29 @@ async def user_profile_page(
         "wishlist": wishlist,
         "achievements": achievements,
         "current_user": current_user,
+        "is_friend": bool(is_friend)
     })
+
+@app.post("/friends/add/{user_id}")
+async def add_friend(user_id: int, current_user: dict = Depends(get_current_user)):
+    existing = await database.fetch_one("""
+        SELECT 1 FROM friends
+        WHERE 
+            (user1_id = :uid1 AND user2_id = :uid2)
+            OR
+            (user1_id = :uid2 AND user2_id = :uid1)
+    """, {"uid1": current_user["id"], "uid2": user_id})
+
+    if existing:
+        raise HTTPException(status_code=400, detail="Już jesteście znajomymi")
+
+    await database.execute("""
+        INSERT INTO friends (user1_id, user2_id, friends_since)
+        VALUES (:uid1, :uid2, NOW())
+    """, {"uid1": current_user["id"], "uid2": user_id})
+
+    return RedirectResponse(url=f"/profile/{user_id}", status_code=303)
+
 
 @app.get("/profile/edit")
 async def edit_profile_get(request: Request, current_user: User = Depends(get_current_user)):
@@ -668,7 +721,7 @@ async def friends_page(request: Request, access_token: str = Cookie(default=None
 
 # Routes - Producer
 @app.get("/producer/{producer_id}", response_class=HTMLResponse)
-async def producer_detail(request: Request, producer_id: int):
+async def producer_detail(request: Request, producer_id: int,  current_user: Optional[dict] = Depends(get_optional_user)):
     """Display producer details"""
     producer_query = """
         SELECT p.*, c.name AS country_name
@@ -704,7 +757,8 @@ async def producer_detail(request: Request, producer_id: int):
         "producer": producer,
         "games": games,
         "ratings": ratings,
-        "user": request.state.user
+        "user": request.state.user,
+        "current_user": current_user
     })
 
 

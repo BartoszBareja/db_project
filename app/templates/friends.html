@@ -1,22 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
+<link rel="stylesheet" href="/static/styles/friends.css?v={{ time }}" />
 <div class="main">
-    <p>Twoi znajomi</p>
+    <h2 class="section-title">Twoi znajomi</h2>
 </div>
 
 <div class="tiles-section">
-    <h2>Lista znajomych</h2>
+    <h2 class="section-title">Lista znajomych</h2>
     <div class="tiles-grid">
         {% if friends %}
             {% for friend in friends %}
-            <div style="margin-bottom: 20px;">
-                <p>{{ friend.username }}</p>
-                <button onclick="openChat({{ friend.id }}, '{{ friend.username }}')">Czat</button>
+            <div class="tile friend-tile">
+                <p><strong>{{ friend.username }}</strong></p>
+                <button class="chat-button" onclick="openChat({{ friend.id }}, '{{ friend.username }}')">💬 Czat</button>
 
-                <div id="chat-box-{{ friend.id }}" style="display:none; border:1px solid #ccc; margin-top:5px; padding:10px; max-width: 300px;">
-                    <div id="messages-{{ friend.id }}" style="height:150px; overflow:auto; border-bottom:1px solid #aaa; margin-bottom:5px;"></div>
-                    <input id="input-{{ friend.id }}" type="text" placeholder="Napisz wiadomość..." style="width: 80%;">
-                    <button onclick="sendMessage({{ friend.id }})">Wyślij</button>
+                <div id="chat-box-{{ friend.id }}" class="chat-box" style="display:none;">
+                    <div id="messages-{{ friend.id }}" class="message-list"></div>
+                    <div class="chat-input-row">
+                        <input id="input-{{ friend.id }}" type="text" class="chat-input" placeholder="Napisz wiadomość...">
+                        <button class="send-button" onclick="sendMessage({{ friend.id }})">Wyślij</button>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -41,11 +44,8 @@
 
         // Pokaż wybrany czat
         chatBox.style.display = 'block';
-
-        // Wyczyść stare wiadomości
         messagesDiv.innerHTML = "";
 
-        // Załaduj historię
         fetch(`/chat/history/${currentUserId}/${friendId}`)
             .then(res => res.json())
             .then(history => {
@@ -57,21 +57,18 @@
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             });
 
-        // WebSocket
         if (!sockets[friendId]) {
             const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${currentUserId}/${friendId}`);
             sockets[friendId] = ws;
 
             ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    const senderLabel = (data.sender_id === currentUserId) ? "Ty" : "Znajomy";
-
-    const p = document.createElement('p');
-    p.textContent = `${senderLabel}: ${data.content}`;
-    messagesDiv.appendChild(p);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-};
-
+                const data = JSON.parse(event.data);
+                const senderLabel = (data.sender_id === currentUserId) ? "Ty" : "Znajomy";
+                const p = document.createElement('p');
+                p.textContent = `${senderLabel}: ${data.content}`;
+                messagesDiv.appendChild(p);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            };
 
             ws.onclose = () => {
                 const p = document.createElement('p');
@@ -90,14 +87,11 @@
         const msg = input.value.trim();
         if (msg && sockets[friendId] && sockets[friendId].readyState === WebSocket.OPEN) {
             sockets[friendId].send(msg);
-
-            // Dodaj wiadomość lokalnie
             const messagesDiv = document.getElementById(`messages-${friendId}`);
             const p = document.createElement('p');
             p.textContent = `Ty: ${msg}`;
             messagesDiv.appendChild(p);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
             input.value = '';
         }
     }

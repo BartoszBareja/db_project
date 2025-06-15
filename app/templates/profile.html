@@ -36,6 +36,17 @@
     <p><span>Saldo portfela:</span> {{ user.wallet_balance }}</p>
   </div>
 
+  {% if current_user and current_user.id != user.id %}
+  {% if not is_friend %}
+    <form action="/friends/add/{{ user.id }}" method="post">
+      <button type="submit" class="add-friend-btn">➕ Dodaj do znajomych</button>
+    </form>
+  {% else %}
+    <p class="already-friends">✔️ Jesteście już znajomymi</p>
+  {% endif %}
+{% endif %}
+
+
   {% if current_user and current_user.id == user.id %}
     <a href="/profile/edit" class="edit-profile-btn">Edytuj profil</a>
   {% endif %}

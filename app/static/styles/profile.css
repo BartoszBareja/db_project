@@ -149,3 +149,26 @@
   margin: 0.4rem 0 0.2rem;
   color: #444;
 }
+
+.add-friend-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: #f9aec9;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(210, 140, 210, 0.3);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.add-friend-btn:hover {
+  background-color: #d6608d;
+}
+
+.already-friends {
+  margin-top: 12px;
+  color: #888;
+  font-style: italic;
+}

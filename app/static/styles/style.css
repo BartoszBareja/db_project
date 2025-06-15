@@ -288,3 +288,7 @@ main {
 .sidebar.hidden + main {
   margin-left: 0;
 }
+
+h2{
+text-align: center;
+}
