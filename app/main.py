@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import Cookie
-from app.database import database
-
+from app.database import database, SessionLocal
+import datetime
 from app.database import database
 from app.models import User  # Upewnij się, że masz SQLAlchemy model User
 
@@ -386,20 +386,31 @@ async def get_user_achievements(user_id: int):
     achievements = await database.fetch_all(query, {"user_id": user_id})
     return achievements
 
+from fastapi import Query
+
 @app.get("/profile", response_class=HTMLResponse)
-async def profile_page(request: Request, access_token: str = Cookie(None)):
-    if not access_token:
-        return RedirectResponse("/login", status_code=302)
-
-    try:
-        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-    except JWTError:
-        return RedirectResponse("/login", status_code=302)
-
-    user = await database.fetch_one("SELECT * FROM users WHERE username = :username", {"username": username})
-    if not user:
-        return RedirectResponse("/login", status_code=302)
+async def profile_page(
+    request: Request,
+    username: Optional[str] = Query(None),
+    access_token: Optional[str] = Cookie(None)
+):
+    if username:
+        # Szukamy użytkownika po podanej nazwie w URL, np. /profile?username=janek
+        user = await database.fetch_one("SELECT * FROM users WHERE username = :username", {"username": username})
+        if not user:
+            return HTMLResponse("<h1>Użytkownik nie istnieje.</h1>", status_code=404)
+    else:
+        # Ładujemy profil aktualnie zalogowanego użytkownika
+        if not access_token:
+            return RedirectResponse("/login", status_code=302)
+        try:
+            payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+            current_username = payload.get("sub")
+        except JWTError:
+            return RedirectResponse("/login", status_code=302)
+        user = await database.fetch_one("SELECT * FROM users WHERE username = :username", {"username": current_username})
+        if not user:
+            return RedirectResponse("/login", status_code=302)
 
     wishlist_query = """
     SELECT g.id, g.title
@@ -476,3 +487,87 @@ async def edit_profile_post(
         await database.execute(query, update_data)
 
     return RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
+
+connections = {}
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
+from sqlalchemy.orm import sessionmaker
+import datetime
+from app.models import Message
+
+@app.websocket("/ws/chat/{user_id}/{friend_id}")
+async def chat_ws(websocket: WebSocket, user_id: int, friend_id: int):
+    await websocket.accept()
+    # Zapisz połączenie (można rozszerzyć do listy, żeby obsługiwać wielokrotne połączenia jednego usera)
+    connections.setdefault(user_id, {})
+    connections[user_id][friend_id] = websocket
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+
+            # Zapis do bazy
+            db: Session = SessionLocal()
+            message = Message(sender_id=user_id, receiver_id=friend_id, content=data)
+            db.add(message)
+            db.commit()
+            db.close()
+
+            # Wyślij do odbiorcy jeśli online
+            if friend_id in connections and user_id in connections[friend_id]:
+                await connections[friend_id][user_id].send_text(f"Friend: {data}")
+
+            # Potwierdzenie do nadawcy
+            await websocket.send_text(f"You: {data}")
+
+    except WebSocketDisconnect:
+        # Usuń połączenie przy rozłączeniu
+        if user_id in connections and friend_id in connections[user_id]:
+            del connections[user_id][friend_id]
+
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse
+
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+from datetime import datetime
+
+@app.get("/chat/history/{user_id}/{friend_id}")
+def get_chat_history(user_id: int, friend_id: int, db: Session = Depends(get_db)):
+    messages = db.query(Message).filter(
+        ((Message.sender_id == user_id) & (Message.receiver_id == friend_id)) |
+        ((Message.sender_id == friend_id) & (Message.receiver_id == user_id))
+    ).order_by(Message.timestamp).all()
+
+    history = []
+    for msg in messages:
+        history.append({
+            "sender": "Ty" if msg.sender_id == user_id else "Znajomy",
+            "sender_id": msg.sender_id,
+            "content": msg.content,
+            "timestamp": msg.timestamp.isoformat() if msg.timestamp else None
+        })
+
+    return JSONResponse(content=history)
+
+from fastapi import FastAPI, Request, Depends
+from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse
+from app.models import Game, User
+from app.database import get_db
+@app.get("/search")
+def search(q: str, db: Session = Depends(get_db)):
+    query = f"%{q.lower()}%"
+    games = db.query(Game).filter(Game.title.ilike(query)).limit(5).all()
+    users = db.query(User).filter(User.username.ilike(query)).limit(5).all()
+
+    return JSONResponse({
+        "games": [{"id": g.id, "title": g.title} for g in games],
+        "users": [{"id": u.id, "username": u.username} for u in users],
+    })

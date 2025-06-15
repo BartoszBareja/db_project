@@ -20,6 +20,8 @@
 
     <p><strong>Data premiery:</strong> {{ game.release_date }}</p>
     <p><strong>Gatunek:</strong> {{ game.genre }}</p>
+    <p><strong>Cena: </strong>{{  game.price  }}</p>
+    <p><a href="{{  game.itch_link  }}"><strong>Link </strong></a></p>
   </div>
 
   <h2>Osiągnięcia</h2>
@@ -41,9 +43,6 @@
   {% endif %}
 
   <a href="/">← Wróć na stronę główną</a>
-{% endblock %}
-
-{% block scripts %}
 
 {% if request.cookies.get("access_token") %}
   <form id="library-form" method="post" action="/game/{{ game.id }}/add_to_library" style="display:inline;">
@@ -73,7 +72,9 @@
   <p>Brak recenzji dla tej gry.</p>
 {% endif %}
 
+{% endblock %}
 
+{% block scripts %}
 
 <script>
   function toggleDescription(id) {

@@ -7,15 +7,99 @@
 <div class="tiles-section">
     <h2>Lista znajomych</h2>
     <div class="tiles-grid">
-        {% for friend in friends %}
-        <div class="tile">
-            <p>{{ friend.username }}</p>
-            <div style="color:#999; font-size:0.9rem;">Znajomi od: {{ friend.friends_since.strftime("%Y-%m-%d") }}</div>
-        </div>
-        {% endfor %}
-        {% if friends|length == 0 %}
-        <p style="text-align:center;">Nie masz jeszcze żadnych znajomych 😢</p>
+        {% if friends %}
+            {% for friend in friends %}
+            <div style="margin-bottom: 20px;">
+                <p>{{ friend.username }}</p>
+                <button onclick="openChat({{ friend.id }}, '{{ friend.username }}')">Czat</button>
+
+                <div id="chat-box-{{ friend.id }}" style="display:none; border:1px solid #ccc; margin-top:5px; padding:10px; max-width: 300px;">
+                    <div id="messages-{{ friend.id }}" style="height:150px; overflow:auto; border-bottom:1px solid #aaa; margin-bottom:5px;"></div>
+                    <input id="input-{{ friend.id }}" type="text" placeholder="Napisz wiadomość..." style="width: 80%;">
+                    <button onclick="sendMessage({{ friend.id }})">Wyślij</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center;">Nie masz jeszcze żadnych znajomych 😢</p>
         {% endif %}
     </div>
 </div>
+
+<script>
+    const currentUserId = {{ current_user.id }};
+    const sockets = {};
+
+    function openChat(friendId, friendName) {
+        const chatBox = document.getElementById(`chat-box-${friendId}`);
+        const messagesDiv = document.getElementById(`messages-${friendId}`);
+
+        // Ukryj inne czaty
+        document.querySelectorAll('[id^="chat-box-"]').forEach(div => {
+            if(div.id !== `chat-box-${friendId}`) div.style.display = 'none';
+        });
+
+        // Pokaż wybrany czat
+        chatBox.style.display = 'block';
+
+        // Wyczyść stare wiadomości
+        messagesDiv.innerHTML = "";
+
+        // Załaduj historię
+        fetch(`/chat/history/${currentUserId}/${friendId}`)
+            .then(res => res.json())
+            .then(history => {
+                history.forEach(msg => {
+                    const p = document.createElement('p');
+                    p.textContent = `${msg.sender}: ${msg.content}`;
+                    messagesDiv.appendChild(p);
+                });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+
+        // WebSocket
+        if (!sockets[friendId]) {
+            const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${currentUserId}/${friendId}`);
+            sockets[friendId] = ws;
+
+            ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    const senderLabel = (data.sender_id === currentUserId) ? "Ty" : "Znajomy";
+
+    const p = document.createElement('p');
+    p.textContent = `${senderLabel}: ${data.content}`;
+    messagesDiv.appendChild(p);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+};
+
+
+            ws.onclose = () => {
+                const p = document.createElement('p');
+                p.textContent = "Czat zakończony.";
+                messagesDiv.appendChild(p);
+            };
+
+            ws.onerror = (e) => {
+                console.error("WebSocket error:", e);
+            };
+        }
+    }
+
+    function sendMessage(friendId) {
+        const input = document.getElementById(`input-${friendId}`);
+        const msg = input.value.trim();
+        if (msg && sockets[friendId] && sockets[friendId].readyState === WebSocket.OPEN) {
+            sockets[friendId].send(msg);
+
+            // Dodaj wiadomość lokalnie
+            const messagesDiv = document.getElementById(`messages-${friendId}`);
+            const p = document.createElement('p');
+            p.textContent = `Ty: ${msg}`;
+            messagesDiv.appendChild(p);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            input.value = '';
+        }
+    }
+</script>
 {% endblock %}

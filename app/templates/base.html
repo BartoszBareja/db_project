@@ -13,9 +13,10 @@
     <p>GameZone</p>
 
     <div class="search-bar">
-      <input type="text" placeholder="Szukaj gier...">
-      <button type="submit">Szukaj</button>
-    </div>
+  <input type="text" id="searchInput" placeholder="Szukaj gier lub użytkowników...">
+  <div id="searchResults" class="search-results hidden"></div>
+</div>
+
 
     {% if current_user %}
       <div class="user-info">
@@ -65,14 +66,85 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <script>
-    const menuToggle = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
+<script>
+  const menuToggle = document.querySelector('.menu-toggle');
+  const sidebar = document.querySelector('.sidebar');
 
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-    });
-  </script>
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+  });
+
+  const input = document.getElementById('searchInput');
+  const resultsBox = document.getElementById('searchResults');
+
+  input.addEventListener('blur', () => {
+    // Po odfocusowaniu ukryj podpowiedzi z małym opóźnieniem (żeby kliknąć link)
+    setTimeout(() => {
+      resultsBox.style.display = 'none';
+    }, 150);
+  });
+
+  input.addEventListener('focus', () => {
+    if (resultsBox.innerHTML.trim() !== '') {
+      resultsBox.style.display = 'block';
+    }
+  });
+
+  // Event input — wywołuje fetch i pokazuje podpowiedzi
+  input.addEventListener('input', async () => {
+    const query = input.value.trim();
+    if (query.length < 2) {
+      resultsBox.style.display = 'none';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error('Błąd sieci');
+      const data = await res.json();
+
+      let html = '';
+
+      if (data.games.length > 0) {
+        html += `<strong>Gry:</strong><br>`;
+        data.games.forEach(game => {
+          html += `<a href="/game/${game.id}">${game.title}</a><br>`;
+        });
+      }
+
+      if (data.users.length > 0) {
+        html += `<strong>Użytkownicy:</strong><br>`;
+        data.users.forEach(user => {
+          // link do profilu po username w query param (możesz zmienić jak chcesz)
+          html += `<a href="/profile?username=${encodeURIComponent(user.username)}">${user.username}</a><br>`;
+        });
+      }
+
+      if (!html) {
+        html = '<em>Brak wyników</em>';
+      }
+
+      resultsBox.innerHTML = html;
+      resultsBox.style.display = 'block';
+
+    } catch (err) {
+      resultsBox.innerHTML = '<em>Błąd podczas wyszukiwania</em>';
+      resultsBox.style.display = 'block';
+    }
+  });
+
+  // Po naciśnięciu Enter w input przekieruj na /profile?q=...
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = input.value.trim();
+      if (query.length > 0) {
+        window.location.href = `/profile?q=${encodeURIComponent(query)}`;
+      }
+    }
+  });
+</script>
+
 
   {% block scripts %}{% endblock %}
 

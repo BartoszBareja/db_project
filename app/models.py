@@ -65,3 +65,19 @@ class UserUpdate(BaseModel):
     country_id: Optional[str] = None
     birth_date: Optional[date] = None
     status: Optional[str] = None
+
+from sqlalchemy import DateTime, TIMESTAMP, ForeignKey, Text
+from sqlalchemy.orm import relationship
+from datetime import datetime
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    receiver_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    content = Column(Text, nullable=False)
+    timestamp = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])
