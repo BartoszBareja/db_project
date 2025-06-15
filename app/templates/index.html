@@ -11,13 +11,13 @@
   <div class="swiper carousel1">
     <div class="swiper-wrapper">
       {% for game in carousel_games %}
-      <div class="swiper-slide">
-        <a href="/game/{{ game.id }}">
-          <img src="./static/images/placeholder.jpg" alt="{{ game.title }}" />
-          <p>{{ game.title }}</p>
-        </a>
-      </div>
-      {% endfor %}
+  <div class="swiper-slide">
+    <a href="/game/{{ game.id }}">
+      <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" />
+      <p>{{ game.title }}</p>
+    </a>
+  </div>
+{% endfor %}
     </div>
     <div class="swiper-button-prev swiper-button-prev-1"></div>
     <div class="swiper-button-next swiper-button-next-1"></div>
@@ -30,22 +30,25 @@
 </div>
 
 <!-- Karuzela 2 -->
+<!-- Karuzela 2 -->
 <div class="carousel-wrapper">
   <div class="swiper carousel2">
     <div class="swiper-wrapper">
-      <div class="swiper-slide"><img src="./static/images/placeholder.jpg" alt="Nowość 1" /><p>Nowość 1</p></div>
-      <div class="swiper-slide"><img src="./static/images/placeholder2.jpg" alt="Nowość 2" /><p>Nowość 2</p></div>
-      <div class="swiper-slide"><img src="./static/images/placeholder3.jpg" alt="Nowość 3" /><p>Nowość 3</p></div>
-      <div class="swiper-slide"><img src="./static/images/placeholder4.jpg" alt="Nowość 4" /><p>Nowość 4</p></div>
-      <div class="swiper-slide"><img src="./static/images/placeholder5.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
-      <div class="swiper-slide"><img src="./static/images/placeholder6.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
-      <div class="swiper-slide"><img src="./static/images/placeholder7.jpg" alt="Nowość 5" /><p>Nowość 5</p></div>
+      {% for game in new_games %}
+      <div class="tile swiper-slide">
+        <a href="/title/{{ game.id }}">
+          <img src="/static/images/{{ game.image_filename or 'placeholder.jpg' }}" alt="{{ game.title }}">
+          <p>{{ game.title }}</p>
+        </a>
+      </div>
+      {% endfor %}
     </div>
     <div class="swiper-button-prev swiper-button-prev-2"></div>
     <div class="swiper-button-next swiper-button-next-2"></div>
     <div class="swiper-pagination swiper-pagination-2"></div>
   </div>
 </div>
+
 
 <div>
   <h2 class="section_titles">Genres</h2>
@@ -54,13 +57,15 @@
 <!-- Kafelki -->
 <div class="tiles-section">
   <div class="tiles-grid">
-    <div class="tile"><img src="./static/images/placeholder.jpg" alt="Tile 1"><p>Tile 1</p></div>
-    <div class="tile"><img src="./static/images/placeholder2.jpg" alt="Tile 2"><p>Tile 2</p></div>
-    <div class="tile"><img src="./static/images/placeholder3.jpg" alt="Tile 3"><p>Tile 3</p></div>
-    <div class="tile"><img src="./static/images/placeholder4.jpg" alt="Tile 4"><p>Tile 4</p></div>
-    <div class="tile"><img src="./static/images/placeholder5.jpg" alt="Tile 5"><p>Tile 5</p></div>
-    <div class="tile"><img src="./static/images/placeholder6.jpg" alt="Tile 6"><p>Tile 6</p></div>
-    <div class="tile"><img src="./static/images/placeholder7.jpg" alt="Tile 7"><p>Tile 7</p></div>
+    {% for genre in genres_with_game %}
+  <div class="tile">
+    <a href="/genre/{{ genre.genre_id }}">
+      <img src="/static/images/{{ genre.image_filename or 'placeholder.jpg' }}" alt="{{ genre.genre_name }}">
+      <p>{{ genre.genre_name }}<br><small>({{ genre.game_title }})</small></p>
+    </a>
+  </div>
+{% endfor %}
+
   </div>
 </div>
 

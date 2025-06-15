@@ -19,7 +19,7 @@
     </p>
 
     <p><strong>Data premiery:</strong> {{ game.release_date }}</p>
-    <p><strong>Gatunek:</strong> {{ game.genre }}</p>
+    <p><strong>Gatunek:</strong> {{ genres | join(", ") }}</p>
     <p><strong>Cena: </strong>{{  game.price  }}</p>
     <p><a href="{{  game.itch_link  }}"><strong>Link </strong></a></p>
   </div>

@@ -52,8 +52,42 @@ async def add_user_to_request(request: Request, call_next):
 
 @app.get("/", response_class=HTMLResponse)
 async def homepage(request: Request, access_token: str = Cookie(default=None)):
-    query_carousel = "SELECT id, title FROM games ORDER BY id ASC LIMIT 6"
+    # 6 gier do pierwszej karuzeli z miniaturą
+    query_carousel = """
+        SELECT g.id, g.title, i.filename
+        FROM games g
+        LEFT JOIN images i ON g.id = i.game_id AND i.is_thumbnail = TRUE
+        ORDER BY g.id ASC
+        LIMIT 6
+    """
     carousel_games = await database.fetch_all(query_carousel)
+
+    # 8 najnowszych gier z miniaturą
+    query_new_games = """
+        SELECT g.id, g.title, i.filename
+        FROM games g
+        LEFT JOIN images i ON g.id = i.game_id AND i.is_thumbnail = TRUE
+        ORDER BY g.release_date DESC
+        LIMIT 8
+    """
+    new_games = await database.fetch_all(query_new_games)
+
+    # Gatunki z przykładową grą i jej miniaturą
+    query_genres = """
+        SELECT gen.id AS genre_id, gen.name AS genre_name, g.id AS game_id, g.title AS game_title, i.filename AS image_filename
+        FROM genres gen
+        JOIN game_genres gg ON gen.id = gg.genre_id
+        JOIN games g ON gg.game_id = g.id
+        LEFT JOIN images i ON g.id = i.game_id AND i.is_thumbnail = TRUE
+        WHERE g.release_date = (
+            SELECT MIN(g2.release_date)
+            FROM game_genres gg2
+            JOIN games g2 ON gg2.game_id = g2.id
+            WHERE gg2.genre_id = gen.id
+        )
+        ORDER BY gen.name
+    """
+    genres_with_game = await database.fetch_all(query_genres)
 
     current_user = None
     if access_token:
@@ -67,11 +101,13 @@ async def homepage(request: Request, access_token: str = Cookie(default=None)):
                 )
                 current_user = dict(record) if record else None
         except JWTError:
-            pass  # Nieprawidłowy token – ignorujemy
+            pass
 
     return templates.TemplateResponse("index.html", {
         "request": request,
         "carousel_games": carousel_games,
+        "new_games": new_games,
+        "genres_with_game": genres_with_game,
         "current_user": current_user
     })
 
@@ -168,6 +204,16 @@ async def game_detail(request: Request, game_id: int):
     if not game:
         return HTMLResponse("<h1>Gra nie istnieje.</h1>", status_code=404)
 
+    # Pobierz gatunki gry
+    genres_query = """
+        SELECT gen.name
+        FROM genres gen
+        JOIN game_genres gg ON gen.id = gg.genre_id
+        WHERE gg.game_id = :game_id
+    """
+    genres = await database.fetch_all(genres_query, values={"game_id": game_id})
+    genre_list = [g["name"] for g in genres]
+
     achievements_query = """
         SELECT id, name, description, points
         FROM achievements
@@ -189,8 +235,10 @@ async def game_detail(request: Request, game_id: int):
         "game": game,
         "achievements": achievements,
         "ratings": ratings,
+        "genres": genre_list,
         "user": request.state.user
     })
+
 
 @app.post("/game/{game_id}/add_to_library")
 async def add_to_library(game_id: int, access_token: Optional[str] = Cookie(None)):
