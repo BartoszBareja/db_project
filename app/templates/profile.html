@@ -2,6 +2,7 @@
 {% block title %}Profil{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="/static/styles/profile.css?v={{ time }}" />
 <div class="profile-container">
   <div class="profile-header">
     <img class="profile-avatar" src="{{ user.profile_picture or '/static/default_avatar.png' }}" alt="Avatar użytkownika">
@@ -54,6 +55,7 @@
     <p>Brak znajomych.</p>
   {% endif %}
 </div>
+
 
 <div class="wishlist">
   <h2>Wishlist</h2>

@@ -3,28 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Rejestracja</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/styles/register.css?v={{ time }}">
 </head>
 <body>
-    <h1>Rejestracja</h1>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <form method="post">
-        <label>Nazwa użytkownika:</label><br>
-        <input type="text" name="username" required><br><br>
+    <div class="register-container">
+        <h1>Rejestracja</h1>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
 
-        <label>Hasło:</label><br>
-        <input type="password" name="password" required><br><br>
+        <form method="post" class="register-form">
+            <label>Nazwa użytkownika:</label>
+            <input type="text" name="username" required>
 
-        <label>Data urodzenia:</label><br>
-        <input type="date" name="birth_date" required><br><br>
+            <label>Email:</label>
+            <input type="email" name="email" required>
 
-        <button type="submit">Zarejestruj się</button>
-    </form>
-    <p>Masz już konto? <a href="/login">Zaloguj się</a></p>
+            <label>Hasło:</label>
+            <input type="password" name="password" required>
+
+            <label>Data urodzenia:</label>
+            <input type="date" name="birth_date" required>
+
+            <button type="submit">Zarejestruj się</button>
+        </form>
+
+        <p class="login-link">Masz już konto? <a href="/login">Zaloguj się</a></p>
+    </div>
 </body>
 </html>

@@ -2,6 +2,8 @@
 {% block title %}Not Steam - {{ game.title }}{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="/static/styles/game.css?v={{ time }}" />
 <div class="game-container">
   <!-- Hero Section -->
   <section class="game-hero">
@@ -12,6 +14,13 @@
           <div class="game-description">
             <p>{{ game.description }}</p>
           </div>
+          {% if game.producer_id and game.producer_name %}
+            <div class="game-producer-link">
+              <a href="/producer/{{ game.producer_id }}" class="producer-link">
+               Producer profile: {{ game.producer_name }}
+              </a>
+            </div>
+{% endif %}
           <div class="game-actions">
             <a href="{{ game.itch_link }}" target="_blank" rel="noopener noreferrer" class="itch-link">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -99,7 +108,8 @@
               <div class="reviewer-avatar">
                 {{ rating.username[0]|upper }}
               </div>
-              <span class="reviewer-name">{{ rating.username }}</span>
+              <a href="/profile/{{ rating.user_id }}" class="reviewer-name">{{ rating.username }}</a>
+
             </div>
             <div class="review-rating">
               {% for i in range(1, 6) %}

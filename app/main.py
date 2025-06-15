@@ -308,7 +308,7 @@ async def game_detail(request: Request, game_id: int):
 
     # Pobierz oceny i recenzje
     ratings_query = """
-        SELECT r.rating, r.description, r.rated_at, u.username
+        SELECT r.rating, r.description, r.rated_at, u.username, u.id AS user_id
         FROM game_ratings r
         JOIN users u ON r.user_id = u.id
         WHERE r.game_id = :game_id
@@ -522,6 +522,43 @@ async def profile_page(
         "current_user": current_user,
     })
 
+@app.get("/profile/{user_id}", response_class=HTMLResponse)
+async def user_profile_page(
+    request: Request,
+    user_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    user = await database.fetch_one("SELECT * FROM users WHERE id = :id", {"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik nie istnieje.")
+
+    # Pobierz znajomych użytkownika
+    friends_query = """
+    SELECT u.id, u.username
+    FROM friends f
+    JOIN users u ON (u.id = CASE WHEN f.user1_id = :user_id THEN f.user2_id ELSE f.user1_id END)
+    WHERE :user_id IN (f.user1_id, f.user2_id)
+    """
+    friends = await database.fetch_all(friends_query, {"user_id": user_id})
+
+    wishlist_query = """
+    SELECT g.id, g.title
+    FROM wishlist w
+    JOIN games g ON w.game_id = g.id
+    WHERE w.user_id = :user_id
+    ORDER BY w.added_at DESC
+    """
+    wishlist = await database.fetch_all(wishlist_query, {"user_id": user_id})
+    achievements = await get_user_achievements(user_id)
+
+    return templates.TemplateResponse("profile.html", {
+        "request": request,
+        "user": user,
+        "friends": friends,
+        "wishlist": wishlist,
+        "achievements": achievements,
+        "current_user": current_user,
+    })
 
 @app.get("/profile/edit")
 async def edit_profile_get(request: Request, current_user: User = Depends(get_current_user)):
@@ -654,7 +691,7 @@ async def producer_detail(request: Request, producer_id: int):
 
     # Get producer ratings
     ratings_query = """
-        SELECT r.rating, r.description, r.rated_at, u.username
+        SELECT r.rating, r.description, r.rated_at, u.username, u.id AS user_id
         FROM producer_ratings r
         JOIN users u ON r.user_id = u.id
         WHERE r.producer_id = :producer_id

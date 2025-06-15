@@ -2,23 +2,27 @@
 {% block title %}Moja Biblioteka{% endblock %}
 
 {% block content %}
-  <div class="main">
+  <link rel="stylesheet" href="/static/styles/library.css?v={{ time }}" />
+
+  <div class="library-container">
     <h1>Biblioteka użytkownika {{ current_user.username }}</h1>
 
     {% if games %}
       <ul class="game-list">
         {% for game in games %}
+        <a href="/game/{{ game.id }}">
           <li>
-            <a href="/game/{{ game.id }}">
               {{ game.title }}
-            </a>
           </li>
+        </a>
         {% endfor %}
       </ul>
     {% else %}
       <p>Nie masz jeszcze żadnych gier w bibliotece.</p>
     {% endif %}
 
-    <a href="/">← Wróć na stronę główną</a>
+    <div class="back-link">
+      <a href="/">← Wróć na stronę główną</a>
+    </div>
   </div>
 {% endblock %}

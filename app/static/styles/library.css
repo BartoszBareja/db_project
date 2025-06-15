@@ -1,0 +1,71 @@
+.library-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff0f5;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+  color: #4a4a4a;
+}
+
+.library-container h1 {
+  font-size: 2rem;
+  text-align: center;
+  color: #b25f94;
+  margin-bottom: 2rem;
+}
+
+.game-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.game-list li {
+  background-color: #ffe4ec;
+  margin-bottom: 0.8rem;
+  padding: 1rem 1.2rem;
+  border-radius: 0.8rem;
+  border: 1px solid #ffcde3;
+  transition: background-color 0.2s ease;
+}
+
+.game-list li:hover {
+  background-color: #ffd6ea;
+}
+
+.game-list li a {
+  color: #b9588b;
+  font-weight: 500;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.game-list li a:hover {
+  text-decoration: underline;
+  color: #9b4572;
+}
+
+.library-container p {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+  margin-top: 2rem;
+}
+
+.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.back-link a {
+  color: #b25f94;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+}

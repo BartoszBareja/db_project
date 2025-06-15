@@ -2,6 +2,7 @@
 {% block title %}Not Steam - Strona Główna{% endblock %}
 
 {% block content %}
+ <link rel="stylesheet" href="/static/styles/index.css?v={{ time }}" />
 <section aria-label="Recommended games">
   <h2 class="section-title">Recommended games</h2>
   <div class="carousel-wrapper">
@@ -121,16 +122,5 @@
       }
     });
   });
-
-  // Bezpieczne odwołanie do menuToggle i sidebar
-  const menuToggle = document.querySelector('.menu-toggle');
-  const sidebar = document.querySelector('.sidebar');
-
-  if (menuToggle && sidebar) {
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-      menuToggle.style.left = sidebar.classList.contains('hidden') ? '15px' : '240px';
-    });
-  }
 </script>
 {% endblock %}

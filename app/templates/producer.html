@@ -4,49 +4,65 @@
 {% endblock %}
 
 {% block content %}
-  <div class="main">
-    <header>
-      <h1>{{ producer.name }}</h1>
-      {% if producer.logo %}
-        <img src="{{ producer.logo }}" alt="Logo producenta" />
+<link rel="stylesheet" href="/static/styles/producer.css?v={{ time }}" />
+
+<div class="producer-container">
+  <div class="producer-header">
+    {% if producer.logo %}
+      <img src="{{ producer.logo }}" alt="Logo {{ producer.name }}" class="producer-logo" />
+    {% endif %}
+    <h1>{{ producer.name }}</h1>
+  </div>
+
+  <section class="producer-info">
+    <h2>📍 Informacje o producencie</h2>
+    <p><strong>Kraj:</strong> {{ producer.country_name or "Nieznany" }}</p>
+    <div class="description">
+      {% if producer.description %}
+        {{ producer.description }}
+      {% else %}
+        <p class="empty">Brak opisu producenta.</p>
       {% endif %}
-    </header>
+    </div>
+  </section>
 
-    <section class="producer-info">
-      <p><strong>Kraj:</strong> {{ producer.country_name }}</p>
-      <p>{{ producer.description }}</p>
-    </section>
-
-    <section class="producer-games">
-      <h2>Gry tego producenta:</h2>
-      <ul>
+  <section class="producer-games">
+    <h2>🎮 Gry tego producenta</h2>
+    {% if games %}
+      <ul class="games-list">
         {% for game in games %}
           <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
         {% endfor %}
       </ul>
-    </section>
+    {% else %}
+      <p><em>Brak gier powiązanych z tym producentem.</em></p>
+    {% endif %}
+  </section>
 
-    <section class="producer-ratings">
-  <h2>Opinie o producencie</h2>
-  {% if ratings %}
-    <ul class="ratings-list">
-      {% for r in ratings %}
-        <li>
-          <strong>{{ r.username }}</strong> -
-          Ocena: {{ r.rating }} / 10<br>
-          <em>{{ r.description or "Brak opisu." }}</em><br>
-          <small>Dodano: {{ r.rated_at.strftime('%Y-%m-%d %H:%M') }}</small>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Brak opinii o tym producencie.</p>
-  {% endif %}
-</section>
+  <section class="producer-ratings">
+    <h2>⭐ Opinie graczy</h2>
+    {% if ratings %}
+      <ul class="ratings-list">
+        {% for r in ratings %}
+          <li>
+            <div class="rating-header">
+              <span><a href="/profile/{{ r.user_id }}">{{ r.username }}</a></span>
+              <span class="rating-score">{{ r.rating }} / 10</span>
+            </div>
+            <div class="rating-body">
+              <p>{{ r.description or "Brak opisu." }}</p>
+              <small>Dodano: {{ r.rated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p><em>Brak opinii o tym producencie.</em></p>
+    {% endif %}
+  </section>
 
-
-    <footer>
-      <a href="/">← Wróć na stronę główną</a>
-    </footer>
+  <div class="back-link">
+    <a href="/">← Wróć na stronę główną</a>
   </div>
+</div>
 {% endblock %}
