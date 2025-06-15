@@ -758,11 +758,16 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Obsługa 404 - nie znaleziono strony
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
-    return HTMLResponse(content=str(exc.detail), status_code=exc.status_code)
+    return HTMLResponse(str(exc.detail), status_code=exc.status_code)
 
 # Obsługa błędów walidacji (np. złe typy w URL)
 @app.exception_handler(RequestValidationError)
