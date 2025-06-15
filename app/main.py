@@ -175,10 +175,20 @@ async def game_detail(request: Request, game_id: int):
     """
     achievements = await database.fetch_all(achievements_query, values={"game_id": game_id})
 
+    ratings_query = """
+        SELECT r.rating, r.description, r.rated_at, u.username
+        FROM game_ratings r
+        JOIN users u ON r.user_id = u.id
+        WHERE r.game_id = :game_id
+        ORDER BY r.rated_at DESC
+    """
+    ratings = await database.fetch_all(ratings_query, values={"game_id": game_id})
+
     return templates.TemplateResponse("game.html", {
         "request": request,
         "game": game,
         "achievements": achievements,
+        "ratings": ratings,
         "user": request.state.user
     })
 
@@ -255,23 +265,38 @@ async def producer_detail(request: Request, producer_id: int):
     producer_query = """
         SELECT p.*, c.name AS country_name
         FROM producers p
-        JOIN countries c ON p.country_id = c.id
+        LEFT JOIN countries c ON p.country_id = c.id
         WHERE p.id = :producer_id
     """
     producer = await database.fetch_one(producer_query, values={"producer_id": producer_id})
 
     if not producer:
-        return HTMLResponse("<h1>Producent nie istnieje.</h1>", status_code=404)
+        return HTMLResponse("<h1>Producent nie znaleziony.</h1>", status_code=404)
 
-    games_query = "SELECT id, title FROM games WHERE producer_id = :producer_id"
+    games_query = """
+        SELECT id, title
+        FROM games
+        WHERE producer_id = :producer_id
+    """
     games = await database.fetch_all(games_query, values={"producer_id": producer_id})
+
+    ratings_query = """
+        SELECT r.rating, r.description, r.rated_at, u.username
+        FROM producer_ratings r
+        JOIN users u ON r.user_id = u.id
+        WHERE r.producer_id = :producer_id
+        ORDER BY r.rated_at DESC
+    """
+    ratings = await database.fetch_all(ratings_query, values={"producer_id": producer_id})
 
     return templates.TemplateResponse("producer.html", {
         "request": request,
         "producer": producer,
         "games": games,
+        "ratings": ratings,
         "user": request.state.user
     })
+
 
 @app.on_event("startup")
 async def startup():

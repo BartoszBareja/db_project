@@ -57,6 +57,23 @@
   <p><a href="/login">Zaloguj się</a>, aby dodawać gry do biblioteki i wishlisty.</p>
 {% endif %}
 
+<h2>Recenzje</h2>
+{% if ratings %}
+  <ul class="ratings-list">
+    {% for r in ratings %}
+      <li>
+        <strong>{{ r.username }}</strong> -
+        Ocena: {{ r.rating }} / 10<br>
+        <em>{{ r.description or "Brak opisu." }}</em><br>
+        <small>Dodano: {{ r.rated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Brak recenzji dla tej gry.</p>
+{% endif %}
+
+
 
 <script>
   function toggleDescription(id) {
