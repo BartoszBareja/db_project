@@ -40,6 +40,21 @@
   {% endif %}
 </div>
 
+<div class="friends-section">
+  <h2>Znajomi</h2>
+  {% if friends and friends|length > 0 %}
+    <ul class="friend-list">
+      {% for friend in friends %}
+        <li>
+          <a href="/profile/{{ friend.id }}">{{ friend.username }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Brak znajomych.</p>
+  {% endif %}
+</div>
+
 <div class="wishlist">
   <h2>Wishlist</h2>
   {% if wishlist and wishlist|length > 0 %}
@@ -68,6 +83,5 @@
 {% else %}
   <p>Użytkownik nie ma jeszcze żadnych osiągnięć.</p>
 {% endif %}
-
 
 {% endblock %}

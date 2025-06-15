@@ -276,6 +276,8 @@ from fastapi import HTTPException  # dodaj ten import, jeśli go nie ma
 @app.get("/game/{game_id}", response_class=HTMLResponse)
 async def game_detail(request: Request, game_id: int):
     """Display game details"""
+
+    # Pobierz dane gry z producentem
     query = """
         SELECT g.*, p.name AS producer_name, p.id AS producer_id
         FROM games g
@@ -283,11 +285,10 @@ async def game_detail(request: Request, game_id: int):
         WHERE g.id = :game_id
     """
     game = await database.fetch_one(query, values={"game_id": game_id})
-
     if not game:
         raise HTTPException(status_code=404, detail="Gra nie została znaleziona.")
 
-    # Get game genres
+    # Pobierz gatunki gry
     genres_query = """
         SELECT gen.name
         FROM genres gen
@@ -297,7 +298,7 @@ async def game_detail(request: Request, game_id: int):
     genres = await database.fetch_all(genres_query, values={"game_id": game_id})
     genre_list = [g["name"] for g in genres]
 
-    # Get achievements
+    # Pobierz osiągnięcia
     achievements_query = """
         SELECT id, name, description, points
         FROM achievements
@@ -305,7 +306,7 @@ async def game_detail(request: Request, game_id: int):
     """
     achievements = await database.fetch_all(achievements_query, values={"game_id": game_id})
 
-    # Get ratings
+    # Pobierz oceny i recenzje
     ratings_query = """
         SELECT r.rating, r.description, r.rated_at, u.username
         FROM game_ratings r
@@ -315,12 +316,14 @@ async def game_detail(request: Request, game_id: int):
     """
     ratings = await database.fetch_all(ratings_query, values={"game_id": game_id})
 
-    # Get user's friends who have this game
+    # Pobierz zalogowanego użytkownika
     user = request.state.user
-    friends_ids = []
+
+    library_friends = []
+    wishlist_friends = []
 
     if user:
-        # Get friend user IDs
+        # Pobierz ID znajomych
         friends_query = """
             SELECT 
                 CASE 
@@ -333,31 +336,28 @@ async def game_detail(request: Request, game_id: int):
         friends = await database.fetch_all(friends_query, values={"user_id": user.id})
         friends_ids = [f["friend_id"] for f in friends]
 
-    # Friends who have the game in their library
-    library_friends = []
-    if friends_ids:
-        library_query = """
-            SELECT u.username
-            FROM library l
-            JOIN users u ON l.user_id = u.id
-            WHERE l.game_id = :game_id AND l.user_id = ANY(:friend_ids)
-        """
-        library_friends = await database.fetch_all(
-            library_query, values={"game_id": game_id, "friend_ids": friends_ids}
-        )
+        if friends_ids:
+            # Znajomi z grą w bibliotece
+            library_query = """
+                SELECT u.username
+                FROM library l
+                JOIN users u ON l.user_id = u.id
+                WHERE l.game_id = :game_id AND l.user_id = ANY(:friend_ids)
+            """
+            library_friends = await database.fetch_all(
+                library_query, values={"game_id": game_id, "friend_ids": friends_ids}
+            )
 
-    # Friends who have the game on their wishlist
-    wishlist_friends = []
-    if friends_ids:
-        wishlist_query = """
-            SELECT u.username
-            FROM wishlist w
-            JOIN users u ON w.user_id = u.id
-            WHERE w.game_id = :game_id AND w.user_id = ANY(:friend_ids)
-        """
-        wishlist_friends = await database.fetch_all(
-            wishlist_query, values={"game_id": game_id, "friend_ids": friends_ids}
-        )
+            # Znajomi z grą na liście życzeń
+            wishlist_query = """
+                SELECT u.username
+                FROM wishlist w
+                JOIN users u ON w.user_id = u.id
+                WHERE w.game_id = :game_id AND w.user_id = ANY(:friend_ids)
+            """
+            wishlist_friends = await database.fetch_all(
+                wishlist_query, values={"game_id": game_id, "friend_ids": friends_ids}
+            )
 
     return templates.TemplateResponse("game.html", {
         "request": request,
@@ -366,8 +366,8 @@ async def game_detail(request: Request, game_id: int):
         "ratings": ratings,
         "genres": genre_list,
         "user": user,
-        "library_friends": [f["username"] for f in library_friends],
-        "wishlist_friends": [f["username"] for f in wishlist_friends]
+        "library_friends": [f["username"] for f in library_friends] if library_friends else [],
+        "wishlist_friends": [f["username"] for f in wishlist_friends] if wishlist_friends else []
     })
 
 @app.post("/game/{game_id}/add_to_library")

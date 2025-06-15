@@ -2,20 +2,20 @@
 {% block title %}Gatunek: {{ genre.name }}{% endblock %}
 
 {% block content %}
-<h1>Gatunek: {{ genre.name }}</h1>
+<div class="genre-container">
+  <h1 class="genre-title">Gatunek: {{ genre.name }}</h1>
 
-{% if games %}
-  <ul class="game-list">
-    {% for game in games %}
-      <li>
-        <a href="/game/{{ game.id }}">
-          <img src="/static/images/{{ game.thumbnail_filename or 'placeholder.jpg' }}" alt="{{ game.title }}" width="100">
-          {{ game.title }}
+  {% if games %}
+    <div class="genre-grid">
+      {% for game in games %}
+        <a href="/game/{{ game.id }}" class="genre-card">
+          <img src="/static/images/{{ game.thumbnail_filename or 'placeholder.jpg' }}" alt="{{ game.title }}">
+          <p>{{ game.title }}</p>
         </a>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>Brak gier w tym gatunku.</p>
-{% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="no-games-text">Brak gier w tym gatunku.</p>
+  {% endif %}
+</div>
 {% endblock %}
