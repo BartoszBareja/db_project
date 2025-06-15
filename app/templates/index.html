@@ -32,7 +32,7 @@
         {% for game in new_games %}
           <div class="tile swiper-slide">
             <a href="/game/{{ game.id }}">
-              <img src="/static/images/{{ game.image_filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
+              <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
               <p>{{ game.title }}</p>
             </a>
           </div>
