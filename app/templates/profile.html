@@ -35,7 +35,9 @@
     <p><span>Saldo portfela:</span> {{ user.wallet_balance }}</p>
   </div>
 
-  <a href="/profile/edit" class="edit-profile-btn">Edytuj profil</a>
+  {% if current_user and current_user.id == user.id %}
+    <a href="/profile/edit" class="edit-profile-btn">Edytuj profil</a>
+  {% endif %}
 </div>
 
 <div class="wishlist">

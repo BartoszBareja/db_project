@@ -36,7 +36,7 @@
     <div class="swiper-wrapper">
       {% for game in new_games %}
       <div class="tile swiper-slide">
-        <a href="/title/{{ game.id }}">
+        <a href="/game/{{ game.id }}">
           <img src="/static/images/{{ game.image_filename or 'placeholder.jpg' }}" alt="{{ game.title }}">
           <p>{{ game.title }}</p>
         </a>
@@ -120,5 +120,16 @@
       });
     });
   });
+
+  menuToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('hidden');
+
+  if (sidebar.classList.contains('hidden')) {
+    menuToggle.style.left = '15px';
+  } else {
+    menuToggle.style.left = '240px'; // przesunięcie, by nie było pod sidebar
+  }
+});
+
 </script>
 {% endblock %}

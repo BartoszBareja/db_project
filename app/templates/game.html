@@ -72,6 +72,21 @@
   <p>Brak recenzji dla tej gry.</p>
 {% endif %}
 
+<h2>Znajomi posiadający tę grę</h2>
+
+{% if library_friends %}
+  <p><strong>W bibliotece:</strong> {{ library_friends | join(", ") }}</p>
+{% else %}
+  <p>Żaden znajomy nie ma tej gry w bibliotece.</p>
+{% endif %}
+
+{% if wishlist_friends %}
+  <p><strong>Na wishliście:</strong> {{ wishlist_friends | join(", ") }}</p>
+{% else %}
+  <p>Żaden znajomy nie ma tej gry na wishliście.</p>
+{% endif %}
+
+
 {% endblock %}
 
 {% block scripts %}

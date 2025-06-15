@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Gatunek: {{ genre.name }}{% endblock %}
+
+{% block content %}
+<h1>Gatunek: {{ genre.name }}</h1>
+
+{% if games %}
+  <ul class="game-list">
+    {% for game in games %}
+      <li>
+        <a href="/game/{{ game.id }}">
+          <img src="/static/images/{{ game.thumbnail_filename or 'placeholder.jpg' }}" alt="{{ game.title }}" width="100">
+          {{ game.title }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Brak gier w tym gatunku.</p>
+{% endif %}
+{% endblock %}

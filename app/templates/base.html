@@ -67,80 +67,85 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-  const menuToggle = document.querySelector('.menu-toggle');
-  const sidebar = document.querySelector('.sidebar');
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
 
-  menuToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('hidden');
-  });
+    console.log('menuToggle:', menuToggle);
+    console.log('sidebar:', sidebar);
 
-  const input = document.getElementById('searchInput');
-  const resultsBox = document.getElementById('searchResults');
+    if (!menuToggle || !sidebar) return;
 
-  input.addEventListener('blur', () => {
-    // Po odfocusowaniu ukryj podpowiedzi z małym opóźnieniem (żeby kliknąć link)
-    setTimeout(() => {
-      resultsBox.style.display = 'none';
-    }, 150);
-  });
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+    });
 
-  input.addEventListener('focus', () => {
-    if (resultsBox.innerHTML.trim() !== '') {
-      resultsBox.style.display = 'block';
-    }
-  });
+    const input = document.getElementById('searchInput');
+    const resultsBox = document.getElementById('searchResults');
 
-  // Event input — wywołuje fetch i pokazuje podpowiedzi
-  input.addEventListener('input', async () => {
-    const query = input.value.trim();
-    if (query.length < 2) {
-      resultsBox.style.display = 'none';
-      return;
-    }
+    if (input && resultsBox) {
+      input.addEventListener('blur', () => {
+        setTimeout(() => {
+          resultsBox.style.display = 'none';
+        }, 150);
+      });
 
-    try {
-      const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
-      if (!res.ok) throw new Error('Błąd sieci');
-      const data = await res.json();
+      input.addEventListener('focus', () => {
+        if (resultsBox.innerHTML.trim() !== '') {
+          resultsBox.style.display = 'block';
+        }
+      });
 
-      let html = '';
+      input.addEventListener('input', async () => {
+        const query = input.value.trim();
+        if (query.length < 2) {
+          resultsBox.style.display = 'none';
+          return;
+        }
 
-      if (data.games.length > 0) {
-        html += `<strong>Gry:</strong><br>`;
-        data.games.forEach(game => {
-          html += `<a href="/game/${game.id}">${game.title}</a><br>`;
-        });
-      }
+        try {
+          const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+          if (!res.ok) throw new Error('Błąd sieci');
+          const data = await res.json();
 
-      if (data.users.length > 0) {
-        html += `<strong>Użytkownicy:</strong><br>`;
-        data.users.forEach(user => {
-          // link do profilu po username w query param (możesz zmienić jak chcesz)
-          html += `<a href="/profile?username=${encodeURIComponent(user.username)}">${user.username}</a><br>`;
-        });
-      }
+          let html = '';
 
-      if (!html) {
-        html = '<em>Brak wyników</em>';
-      }
+          if (data.games.length > 0) {
+            html += `<strong>Gry:</strong><br>`;
+            data.games.forEach(game => {
+              html += `<a href="/game/${game.id}">${game.title}</a><br>`;
+            });
+          }
 
-      resultsBox.innerHTML = html;
-      resultsBox.style.display = 'block';
+          if (data.users.length > 0) {
+            html += `<strong>Użytkownicy:</strong><br>`;
+            data.users.forEach(user => {
+              html += `<a href="/profile?username=${encodeURIComponent(user.username)}">${user.username}</a><br>`;
+            });
+          }
 
-    } catch (err) {
-      resultsBox.innerHTML = '<em>Błąd podczas wyszukiwania</em>';
-      resultsBox.style.display = 'block';
-    }
-  });
+          if (!html) {
+            html = '<em>Brak wyników</em>';
+          }
 
-  // Po naciśnięciu Enter w input przekieruj na /profile?q=...
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const query = input.value.trim();
-      if (query.length > 0) {
-        window.location.href = `/profile?q=${encodeURIComponent(query)}`;
-      }
+          resultsBox.innerHTML = html;
+          resultsBox.style.display = 'block';
+
+        } catch (err) {
+          resultsBox.innerHTML = '<em>Błąd podczas wyszukiwania</em>';
+          resultsBox.style.display = 'block';
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const query = input.value.trim();
+          if (query.length > 0) {
+            window.location.href = `/profile?q=${encodeURIComponent(query)}`;
+          }
+        }
+      });
     }
   });
 </script>
