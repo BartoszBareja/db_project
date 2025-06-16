@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: not_steam
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db_dump:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://notsteamuser:secretpassword@db:5432/not_steam
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  db_data:
