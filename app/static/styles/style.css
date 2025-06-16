@@ -275,3 +275,9 @@ h2 {
   text-align: center;
   color: #d38bb0;
 }
+
+.search-bar { z-index: 1050; }
+.search-bar input { z-index: 1051; }
+.search-results { z-index: 1052; }
+.main { z-index: 1040; }
+.hero-section { z-index: 1; }

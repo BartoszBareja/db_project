@@ -26,12 +26,6 @@
         {% if friends %}
             {% for friend in friends %}
             <div class="friend-card card">
-                <div class="friend-avatar">
-                    <div class="avatar-circle">
-                        <span class="avatar-initial">{{ friend.username[0]|upper }}</span>
-                    </div>
-                    <div class="status-indicator online"></div>
-                </div>
 
                 <div class="friend-info">
                     <h3 class="friend-name">{{ friend.username }}</h3>
