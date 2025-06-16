@@ -6,9 +6,6 @@
 
 <div class="profile-container">
   <div class="profile-header">
-    <div class="profile-avatar-wrapper">
-      <img class="profile-avatar" src="{{ user.profile_picture or '/static/default_avatar.png' }}" alt="Avatar użytkownika">
-    </div>
     <div class="profile-username">{{ user.username }}</div>
   </div>
 
@@ -39,7 +36,6 @@
           {% endif %}
         </p>
         <p><span>Status:</span> {{ user.status or 'Brak statusu' }}</p>
-        <p><span>Saldo portfela:</span> <span class="wallet-balance">{{ user.wallet_balance }}</span></p>
       {% endif %}
     </div>
   </div>
