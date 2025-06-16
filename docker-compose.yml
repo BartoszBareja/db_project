@@ -7,24 +7,42 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: test
       POSTGRES_DB: not_steam
-    volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./db_dump:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  db_importer:
+    image: postgres:15
+    depends_on:
+      - db
+    volumes:
+      - ./app/db_dump:/db_dump
+    entrypoint: [
+      "bash", "-c",
+      "echo 'Waiting for DB...'; \
+      until pg_isready -h db -U postgres; do sleep 1; done; \
+      echo 'Running dump import...'; \
+      psql -h db -U postgres -d not_steam < /db_dump/not_steam_dump.sql; \
+      echo 'Done.'"
+    ]
+    environment:
+      PGPASSWORD: test
+
 
   web:
     build: .
     depends_on:
       - db
+      - db_importer
     environment:
-      DATABASE_URL: postgresql://notsteamuser:secretpassword@db:5432/not_steam
+      DATABASE_URL: postgresql://postgres:test@db:5432/not_steam
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./app:/app/app
     command: >
-      uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   db_data:

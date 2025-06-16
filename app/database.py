@@ -2,7 +2,7 @@ from databases import Database
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-DATABASE_URL = "postgresql://postgres:test@localhost:5432/not_steam"
+DATABASE_URL = "postgresql://postgres:test@db:5432/not_steam"
 
 database = Database(DATABASE_URL)
 
