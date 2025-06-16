@@ -540,6 +540,9 @@ async def profile_page(
             return RedirectResponse("/login", status_code=302)
         user = current_user
 
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
     wishlist_query = """
     SELECT g.id, g.title
     FROM wishlist w
@@ -595,8 +598,9 @@ async def profile_by_username(
     # po prostu przekieruj do /profile?username=xxx
     return RedirectResponse(url=f"/profile?username={username}", status_code=302)
 
-@app.post("/friends/add/{user_id}")
+@app.post("/friends_add/{user_id}")
 async def add_friend(user_id: int, current_user: dict = Depends(get_current_user)):
+    # Sprawdzenie, czy są już znajomymi
     existing = await database.fetch_one("""
         SELECT 1 FROM friends
         WHERE 
@@ -608,13 +612,24 @@ async def add_friend(user_id: int, current_user: dict = Depends(get_current_user
     if existing:
         raise HTTPException(status_code=400, detail="Już jesteście znajomymi")
 
+    # Dodanie znajomego
     await database.execute("""
         INSERT INTO friends (user1_id, user2_id, friends_since)
         VALUES (:uid1, :uid2, NOW())
     """, {"uid1": current_user["id"], "uid2": user_id})
 
-    return RedirectResponse(url=f"/profile/{user_id}", status_code=303)
+    # Pobranie username użytkownika po user_id
+    user = await database.fetch_one("""
+        SELECT username FROM users WHERE id = :user_id
+    """, {"user_id": user_id})
 
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik nie znaleziony")
+
+    username = user["username"]
+
+    # Przekierowanie na /profile?username=username
+    return RedirectResponse(url=f"/profile?username={username}", status_code=303)
 
 @app.get("/profile_edit")
 async def edit_profile_get(request: Request, current_user: User = Depends(get_current_user)):

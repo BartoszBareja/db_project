@@ -2,34 +2,68 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Rejestracja</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejestracja - Not Steam</title>
     <link rel="stylesheet" href="/static/styles/register.css?v={{ time }}">
 </head>
 <body>
-    <div class="register-container">
-        <h1>Rejestracja</h1>
+    <div class="register-page">
+        <div class="register-container">
+            <div class="register-header">
+                <h1 class="register-title">Dołącz do nas</h1>
+                <p class="register-subtitle">Stwórz swoje konto gaming</p>
+            </div>
 
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
+            {% if error %}
+                <div class="error-message">
+                    <span class="error-icon">⚠️</span>
+                    {{ error }}
+                </div>
+            {% endif %}
 
-        <form method="post" class="register-form">
-            <label>Nazwa użytkownika:</label>
-            <input type="text" name="username" required>
+            <form method="post" class="register-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Nazwa użytkownika</label>
+                        <input type="text" id="username" name="username" required class="form-input" placeholder="Wpisz swoją nazwę">
+                    </div>
 
-            <label>Email:</label>
-            <input type="email" name="email" required>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Adres email</label>
+                        <input type="email" id="email" name="email" required class="form-input" placeholder="twoj@email.com">
+                    </div>
 
-            <label>Hasło:</label>
-            <input type="password" name="password" required>
+                    <div class="form-group">
+                        <label for="password" class="form-label">Hasło</label>
+                        <input type="password" id="password" name="password" required class="form-input" placeholder="Stwórz bezpieczne hasło">
+                    </div>
 
-            <label>Data urodzenia:</label>
-            <input type="date" name="birth_date" required>
+                    <div class="form-group">
+                        <label for="birth_date" class="form-label">Data urodzenia</label>
+                        <input type="date" id="birth_date" name="birth_date" required class="form-input">
+                    </div>
+                </div>
 
-            <button type="submit">Zarejestruj się</button>
-        </form>
+                <button type="submit" class="register-btn">
+                    <span class="btn-icon">🎮</span>
+                    Zarejestruj się
+                </button>
+            </form>
 
-        <p class="login-link">Masz już konto? <a href="/login">Zaloguj się</a></p>
+            <div class="login-link">
+                <p>Masz już konto?</p>
+                <a href="/login" class="link-btn">
+                    <span class="link-icon">🔑</span>
+                    Zaloguj się
+                </a>
+            </div>
+        </div>
+
+        <div class="background-decoration">
+            <div class="floating-element element-1"></div>
+            <div class="floating-element element-2"></div>
+            <div class="floating-element element-3"></div>
+        </div>
     </div>
 </body>
 </html>

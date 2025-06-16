@@ -4,25 +4,72 @@
 {% block content %}
   <link rel="stylesheet" href="/static/styles/library.css?v={{ time }}" />
 
-  <div class="library-container">
-    <h1>Biblioteka użytkownika {{ current_user.username }}</h1>
+  <div class="library-page">
+    <div class="library-header">
+      <div class="library-header-content">
+        <h1 class="library-title">Moja Biblioteka</h1>
+        <p class="library-subtitle">Biblioteka użytkownika {{ current_user.username }}</p>
+      </div>
+      <div class="library-decoration">
+        <div class="decoration-element"></div>
+        <div class="decoration-element"></div>
+        <div class="decoration-element"></div>
+      </div>
+    </div>
 
-    {% if games %}
-      <ul class="game-list">
-        {% for game in games %}
-        <a href="/game/{{ game.id }}">
-          <li>
-              {{ game.title }}
-          </li>
+    <div class="library-container">
+      {% if games %}
+        <div class="games-section">
+          <div class="section-header">
+            <h2 class="section-title">Twoje gry</h2>
+            <div class="games-count">{{ games|length }} {% if games|length == 1 %}gra{% elif games|length < 5 %}gry{% else %}gier{% endif %}</div>
+          </div>
+
+          <div class="library-grid">
+            {% for game in games %}
+              <a href="/game/{{ game.id }}" class="game-card">
+                <div class="card-image-container">
+                  <img src="/static/images/{{ game.thumbnail_filename or 'placeholder.jpg' }}" alt="{{ game.title }}" class="card-image">
+                  <div class="card-overlay">
+                    <div class="play-icon">▶</div>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <h3 class="card-title">{{ game.title }}</h3>
+                  <div class="card-meta">
+                    <span class="meta-item">🎮 W bibliotece</span>
+                  </div>
+                </div>
+                <div class="card-hover-effect"></div>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div class="no-games-container">
+          <div class="no-games-icon">📚</div>
+          <h3 class="no-games-title">Pusta biblioteka</h3>
+          <p class="no-games-text">Nie masz jeszcze żadnych gier w bibliotece. Wróć na stronę główną, aby przeglądać dostępne gry.</p>
+          <a href="/" class="back-to-home-btn">
+            <span class="btn-icon">🏠</span>
+            Wróć do strony głównej
+          </a>
+        </div>
+      {% endif %}
+
+      <div class="back-link">
+        <a href="/" class="back-to-home-btn">
+          <span class="btn-icon">←</span>
+          Wróć na stronę główną
         </a>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>Nie masz jeszcze żadnych gier w bibliotece.</p>
-    {% endif %}
+      </div>
+    </div>
 
-    <div class="back-link">
-      <a href="/">← Wróć na stronę główną</a>
+    <div class="background-effects">
+      <div class="floating-particle particle-1"></div>
+      <div class="floating-particle particle-2"></div>
+      <div class="floating-particle particle-3"></div>
+      <div class="floating-particle particle-4"></div>
     </div>
   </div>
 {% endblock %}

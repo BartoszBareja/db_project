@@ -2,17 +2,85 @@
 {% block title %}Not Steam - Strona Główna{% endblock %}
 
 {% block content %}
- <link rel="stylesheet" href="/static/styles/index.css?v={{ time }}" />
+<link rel="stylesheet" href="/static/styles/index.css?v={{ time }}" />
+
+<!-- Hero Featured Game Section -->
+<section class="hero-section" aria-label="Featured game">
+  <div class="hero-content">
+    <div class="hero-game">
+      <a href="/game/{{ carousel_games[0].id }}" class="hero-link">
+        <div class="hero-image">
+          <img src="/static/images/{{ carousel_games[0].filename or 'placeholder.jpg' }}" alt="{{ carousel_games[0].title }}" />
+          <div class="hero-overlay-gradient"></div> <!-- ciemny gradient pod tekst -->
+          <div class="hero-info">
+            <h1 class="hero-title">{{ carousel_games[0].title }}</h1>
+            <p class="hero-subtitle">Wyróżnione i polecane</p>
+            <div class="hero-tags">
+              <span class="badge-tag">Przygoda</span>
+              <span class="badge-tag">Akcja</span>
+              <span class="badge-tag">RPG</span>
+            </div>
+            <div class="hero-price">249.90zł</div>
+          </div>
+        </div>
+      </a>
+      <div class="hero-screenshots">
+        {% for game in carousel_games[1:5] %}
+        <div class="screenshot">
+          <a href="/game/{{ game.id }}">
+            <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" />
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Special Offers Grid -->
+<section aria-label="Special offers">
+  <div class="offers-header">
+    <h2 class="section-title">OFERTY SPECJALNE</h2>
+  </div>
+  <div class="offers-grid">
+    {% for game in carousel_games[:6] %}
+    <div class="offer-card card">
+      <a href="/game/{{ game.id }}">
+        <div class="offer-image card-image">
+          <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
+          <div class="overlay-gradient"></div> <!-- ciemny gradient pod tekst -->
+          <div class="badge badge-discount">-50%</div>
+        </div>
+        <div class="offer-info card-content">
+          <h3 class="card-title">{{ game.title }}</h3>
+          <div class="offer-type card-subtitle">Oferta kończy się 26 czerwca o 19:00</div>
+          <div class="price-info">
+            <span class="badge">-50%</span>
+            <span class="final-price">114.74zł</span>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Recommended Games Carousel -->
 <section aria-label="Recommended games">
-  <h2 class="section-title">Recommended games</h2>
+  <h2 class="section-title">Polecane gry</h2>
   <div class="carousel-wrapper">
     <div class="swiper carousel1" role="region" aria-roledescription="carousel" aria-label="Recommended games carousel">
       <div class="swiper-wrapper">
         {% for game in carousel_games %}
-          <div class="swiper-slide">
+          <div class="swiper-slide card">
             <a href="/game/{{ game.id }}">
-              <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
-              <p>{{ game.title }}</p>
+              <div class="card-image">
+                <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
+                <div class="overlay-gradient"></div> <!-- ciemny gradient -->
+              </div>
+              <div class="card-content">
+                <p class="card-title">{{ game.title }}</p>
+              </div>
             </a>
           </div>
         {% endfor %}
@@ -24,16 +92,22 @@
   </div>
 </section>
 
+<!-- New Games Carousel -->
 <section aria-label="New games">
-  <h2 class="section-title">New games</h2>
+  <h2 class="section-title">Nowe gry</h2>
   <div class="carousel-wrapper">
     <div class="swiper carousel2" role="region" aria-roledescription="carousel" aria-label="New games carousel">
       <div class="swiper-wrapper">
         {% for game in new_games %}
-          <div class="tile swiper-slide">
+          <div class="tile swiper-slide card">
             <a href="/game/{{ game.id }}">
-              <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
-              <p>{{ game.title }}</p>
+              <div class="card-image">
+                <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
+                <div class="overlay-gradient"></div> <!-- ciemny gradient -->
+              </div>
+              <div class="card-content">
+                <p class="card-title">{{ game.title }}</p>
+              </div>
             </a>
           </div>
         {% endfor %}
@@ -45,22 +119,28 @@
   </div>
 </section>
 
+<!-- Genres Section -->
 <section aria-label="Genres">
-  <h2 class="section-title">Genres</h2>
+  <h2 class="section-title">Gatunki</h2>
   <div class="tiles-section">
     <div class="tiles-grid">
       {% for genre in genres_with_game %}
-        <div class="tile">
-          <a href="/genre/{{ genre.genre_id }}">
+        <a href="/genre/{{ genre.genre_id }}" class="tile card">
+          <div class="card-image">
             <img src="/static/images/{{ genre.image_filename or 'placeholder.jpg' }}" alt="{{ genre.genre_name }}" loading="lazy" />
-            <p>{{ genre.genre_name }}<br><small>({{ genre.game_title }})</small></p>
-          </a>
-        </div>
+            <div class="overlay-gradient"></div> <!-- ciemny gradient -->
+          </div>
+          <div class="card-content">
+            <p class="card-title">{{ genre.genre_name }}</p>
+            <small class="card-subtitle">{{ genre.game_title }}</small>
+          </div>
+        </a>
       {% endfor %}
     </div>
   </div>
 </section>
 
+<!-- Rating Section -->
 <section aria-label="Rating">
   <div class="rating-bar" role="radiogroup" aria-label="Oceń stronę">
     <p>Oceń stronę:</p>
@@ -76,9 +156,9 @@
 {% block scripts %}
 <script>
   const swiper1 = new Swiper('.carousel1', {
-    slidesPerView: 3,
-    loop: true,
+    slidesPerView: 'auto',
     spaceBetween: 20,
+    loop: true,
     navigation: {
       nextEl: '.swiper-button-next-1',
       prevEl: '.swiper-button-prev-1',
@@ -87,12 +167,17 @@
       el: '.swiper-pagination-1',
       clickable: true,
     },
+    breakpoints: {
+      320: { slidesPerView: 1, spaceBetween: 10 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 20 }
+    }
   });
 
   const swiper2 = new Swiper('.carousel2', {
-    slidesPerView: 6,
-    loop: true,
+    slidesPerView: 'auto',
     spaceBetween: 15,
+    loop: true,
     navigation: {
       nextEl: '.swiper-button-next-2',
       prevEl: '.swiper-button-prev-2',
@@ -101,26 +186,52 @@
       el: '.swiper-pagination-2',
       clickable: true,
     },
+    breakpoints: {
+      320: { slidesPerView: 2, spaceBetween: 10 },
+      480: { slidesPerView: 3, spaceBetween: 12 },
+      640: { slidesPerView: 4, spaceBetween: 15 },
+      768: { slidesPerView: 5, spaceBetween: 15 },
+      1024: { slidesPerView: 6, spaceBetween: 15 }
+    }
   });
 
+  // Star rating logic
   const stars = document.querySelectorAll('.star');
-  stars.forEach(star => {
-    star.addEventListener('click', () => {
-      const rating = parseInt(star.getAttribute('data-value'));
-      stars.forEach(s => {
-        const val = parseInt(s.getAttribute('data-value'));
-        s.classList.toggle('filled', val <= rating);
-        s.setAttribute('aria-checked', val === rating);
-      });
-      // Tutaj można dodać wysłanie oceny na serwer
-    });
+  let currentRating = 0;
 
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => setRating(index + 1));
+    star.addEventListener('mouseover', () => highlightStars(index + 1));
     star.addEventListener('keydown', (e) => {
-      if(e.key === 'Enter' || e.key === ' ') {
+      if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        star.click();
+        setRating(index + 1);
       }
     });
   });
+
+  document.querySelector('.stars').addEventListener('mouseleave', () => {
+    highlightStars(currentRating);
+  });
+
+  function setRating(rating) {
+    currentRating = rating;
+    highlightStars(rating);
+    stars.forEach((star, index) => {
+      star.setAttribute('aria-checked', index + 1 === rating ? 'true' : 'false');
+    });
+  }
+
+  function highlightStars(rating) {
+    stars.forEach((star, index) => {
+      if (index + 1 <= rating) {
+        star.classList.add('filled');
+        star.innerHTML = '&#9733;';
+      } else {
+        star.classList.remove('filled');
+        star.innerHTML = '&#9734;';
+      }
+    });
+  }
 </script>
 {% endblock %}

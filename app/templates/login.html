@@ -2,28 +2,58 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Logowanie</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie - Not Steam</title>
     <link rel="stylesheet" href="/static/styles/login.css?v={{ time }}">
 </head>
-<body class="auth-page">
-    <div class="auth-container">
-        <h1 class="auth-title">Logowanie</h1>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="login-title">Witaj ponownie</h1>
+                <p class="login-subtitle">Zaloguj się do swojego konta</p>
+            </div>
 
-        {% if error %}
-            <p class="auth-error">{{ error }}</p>
-        {% endif %}
+            {% if error %}
+                <div class="error-message">
+                    <span class="error-icon">⚠️</span>
+                    {{ error }}
+                </div>
+            {% endif %}
 
-        <form method="post" class="auth-form">
-            <label for="username">Nazwa użytkownika:</label>
-            <input type="text" name="username" id="username" required>
+            <form method="post" class="login-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Nazwa użytkownika</label>
+                        <input type="text" id="username" name="username" required class="form-input" placeholder="Wpisz swoją nazwę">
+                    </div>
 
-            <label for="password">Hasło:</label>
-            <input type="password" name="password" id="password" required>
+                    <div class="form-group">
+                        <label for="password" class="form-label">Hasło</label>
+                        <input type="password" id="password" name="password" required class="form-input" placeholder="Wpisz swoje hasło">
+                    </div>
+                </div>
 
-            <button type="submit" class="auth-submit">Zaloguj się</button>
-        </form>
+                <button type="submit" class="login-btn">
+                    <span class="btn-icon">🔑</span>
+                    Zaloguj się
+                </button>
+            </form>
 
-        <p class="auth-link">Nie masz konta? <a href="/register">Zarejestruj się</a></p>
+            <div class="register-link">
+                <p>Nie masz konta?</p>
+                <a href="/register" class="link-btn">
+                    <span class="link-icon">🎮</span>
+                    Zarejestruj się
+                </a>
+            </div>
+        </div>
+
+        <div class="background-decoration">
+            <div class="floating-element element-1"></div>
+            <div class="floating-element element-2"></div>
+            <div class="floating-element element-3"></div>
+        </div>
     </div>
 </body>
 </html>

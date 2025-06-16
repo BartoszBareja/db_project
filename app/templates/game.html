@@ -51,7 +51,7 @@
       </div>
       <div class="game-image">
         <img src="{{ game.image_url or '/static/images/placeholder.jpg' }}" alt="{{ game.title }}" />
-        <div class="image-overlay"></div>
+        <div class="overlay-gradient"></div>
       </div>
     </div>
   </section>
@@ -65,14 +65,14 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
-          Osiągnięcia
+          OSIĄGNIĘCIA
         </h2>
         <span class="section-count">{{ achievements|length }}</span>
       </div>
 
       <div class="achievements-grid">
         {% for achievement in achievements %}
-        <div class="achievement-card">
+        <div class="achievement-card card">
           <div class="achievement-header">
             <h3>{{ achievement.name }}</h3>
             <button class="toggle-btn" onclick="toggleDescription('desc{{ achievement.id }}')">
@@ -96,14 +96,14 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
-          Recenzje
+          RECENZJE
         </h2>
         <span class="section-count">{{ ratings|length }}</span>
       </div>
 
       <div class="reviews-list">
         {% for rating in ratings %}
-        <div class="review-card">
+        <div class="review-card card">
           <div class="review-header">
             <div class="reviewer-info">
               <div class="reviewer-avatar">
@@ -137,14 +137,14 @@
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        Znajomi z tą grą w bibliotece
+        ZNAJOMI Z TĄ GRĄ W BIBLIOTECE
       </h2>
     </div>
 
     {% if library_friends %}
     <div class="friends-grid">
       {% for username in library_friends %}
-      <div class="friend-card">
+      <div class="friend-card card">
         <div class="friend-avatar">{{ username[0]|upper }}</div>
         <div class="friend-info">
           <a href="/profile/{{ username }}" class="friend-name">{{ username }}</a>
@@ -169,14 +169,14 @@
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        Znajomi z tą grą na liście życzeń
+        ZNAJOMI Z TĄ GRĄ NA LIŚCIE ŻYCZEŃ
       </h2>
     </div>
 
     {% if wishlist_friends %}
     <div class="friends-grid">
       {% for username in wishlist_friends %}
-      <div class="friend-card">
+      <div class="friend-card card">
         <div class="friend-avatar">{{ username[0]|upper }}</div>
         <div class="friend-info">
           <a href="/profile/{{ username }}" class="friend-name">{{ username }}</a>

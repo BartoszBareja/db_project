@@ -16,7 +16,9 @@
 
   <section class="producer-info">
     <h2>📍 Informacje o producencie</h2>
-    <p><strong>Kraj:</strong> {{ producer.country_name or "Nieznany" }}</p>
+    <div class="producer-details">
+      <p><strong>Kraj:</strong> {{ producer.country_name or "Nieznany" }}</p>
+    </div>
     <div class="description">
       {% if producer.description %}
         {{ producer.description }}
@@ -29,40 +31,50 @@
   <section class="producer-games">
     <h2>🎮 Gry tego producenta</h2>
     {% if games %}
-      <ul class="games-list">
+      <div class="games-grid">
         {% for game in games %}
-          <li><a href="/game/{{ game.id }}">{{ game.title }}</a></li>
+          <div class="game-card card">
+            <a href="/game/{{ game.id }}">
+              <div class="card-image">
+                <img src="/static/images/{{ game.filename or 'placeholder.jpg' }}" alt="{{ game.title }}" loading="lazy" />
+                <div class="overlay-gradient"></div>
+              </div>
+              <div class="card-content">
+                <h3 class="card-title">{{ game.title }}</h3>
+              </div>
+            </a>
+          </div>
         {% endfor %}
-      </ul>
+      </div>
     {% else %}
-      <p><em>Brak gier powiązanych z tym producentem.</em></p>
+      <p class="empty-message"><em>Brak gier powiązanych z tym producentem.</em></p>
     {% endif %}
   </section>
 
   <section class="producer-ratings">
     <h2>⭐ Opinie graczy</h2>
     {% if ratings %}
-      <ul class="ratings-list">
+      <div class="ratings-list">
         {% for r in ratings %}
-          <li>
+          <div class="rating-card">
             <div class="rating-header">
-              <span><a href="/profile/{{ r.username }}">{{ r.username }}</a></span>
+              <span class="rating-user"><a href="/profile/{{ r.username }}">{{ r.username }}</a></span>
               <span class="rating-score">{{ r.rating }} / 10</span>
             </div>
             <div class="rating-body">
               <p>{{ r.description or "Brak opisu." }}</p>
-              <small>Dodano: {{ r.rated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+              <small class="rating-date">Dodano: {{ r.rated_at.strftime('%Y-%m-%d %H:%M') }}</small>
             </div>
-          </li>
+          </div>
         {% endfor %}
-      </ul>
+      </div>
     {% else %}
-      <p><em>Brak opinii o tym producencie.</em></p>
+      <p class="empty-message"><em>Brak opinii o tym producencie.</em></p>
     {% endif %}
   </section>
 
   <div class="back-link">
-    <a href="/">← Wróć na stronę główną</a>
+    <a href="/" class="btn">← Wróć na stronę główną</a>
   </div>
 </div>
 {% endblock %}

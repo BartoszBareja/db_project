@@ -1,33 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
 <link rel="stylesheet" href="/static/styles/friends.css?v={{ time }}" />
-<div class="main">
-    <h2 class="section-title">Twoi znajomi</h2>
-</div>
 
-<div class="tiles-section">
-    <h2 class="section-title">Lista znajomych</h2>
-    <div class="tiles-grid">
+<section class="friends-main" aria-label="Friends">
+    <h2 class="section-title">Twoi znajomi</h2>
+
+    <div class="friends-stats">
+        <div class="stat-item">
+            <span class="stat-number">{{ friends|length }}</span>
+            <span class="stat-label">Znajomi</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">1</span>
+            <span class="stat-label">Online</span>
+        </div>
+    </div>
+</section>
+
+<section class="friends-section" aria-label="Friends list">
+    <div class="friends-header">
+        <h2 class="section-title">Lista znajomych</h2>
+    </div>
+
+    <div class="friends-grid">
         {% if friends %}
             {% for friend in friends %}
-            <div class="tile friend-tile">
-                <p><strong>{{ friend.username }}</strong></p>
-                <button class="chat-button" onclick="toggleChat({{ friend.id }}, '{{ friend.username }}')">💬 Czat</button>
+            <div class="friend-card card">
+                <div class="friend-avatar">
+                    <div class="avatar-circle">
+                        <span class="avatar-initial">{{ friend.username[0]|upper }}</span>
+                    </div>
+                    <div class="status-indicator online"></div>
+                </div>
+
+                <div class="friend-info">
+                    <h3 class="friend-name">{{ friend.username }}</h3>
+                </div>
+
+                <div class="friend-actions">
+                    <button class="chat-button btn" onclick="toggleChat({{ friend.id }}, '{{ friend.username }}')">
+                        💬 Czat
+                    </button>
+                </div>
 
                 <div id="chat-box-{{ friend.id }}" class="chat-box" style="display:none;">
+                    <div class="chat-header">
+                        <h4>Czat z {{ friend.username }}</h4>
+                        <button class="close-chat" onclick="toggleChat({{ friend.id }}, '{{ friend.username }}')">✕</button>
+                    </div>
                     <div id="messages-{{ friend.id }}" class="message-list"></div>
                     <div class="chat-input-row">
                         <input id="input-{{ friend.id }}" type="text" class="chat-input" placeholder="Napisz wiadomość...">
-                        <button class="send-button" onclick="sendMessage({{ friend.id }})">Wyślij</button>
+                        <button class="send-button btn" onclick="sendMessage({{ friend.id }})">Wyślij</button>
                     </div>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <p style="text-align:center;">Nie masz jeszcze żadnych znajomych 😢</p>
+            <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <h3>Nie masz jeszcze żadnych znajomych</h3>
+                <p>Dodaj znajomych, aby móc z nimi rozmawiać i grać razem!</p>
+                <button class="btn">Znajdź znajomych</button>
+            </div>
         {% endif %}
     </div>
-</div>
+</section>
 
 <script>
     const currentUserId = {{ current_user.id }};

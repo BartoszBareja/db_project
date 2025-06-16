@@ -1,174 +1,409 @@
+/* ===== GLOBAL STYLES ===== */
+body {
+  background: linear-gradient(135deg, #2a1b3d 0%, #1a0d2e 100%);
+  font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #d38bb0;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #d38bb0;
+  margin-bottom: 30px;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  background: rgba(211, 139, 176, 0.2);
+  border: 1px solid #d38bb0;
+  color: #d38bb0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:hover {
+  background: #d38bb0;
+  color: #2a1b3d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(211, 139, 176, 0.3);
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: rgba(255, 240, 246, 0.1);
+  border: 1px solid rgba(211, 139, 176, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 30px;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(211, 139, 176, 0.2);
+}
+
+.card-content {
+  padding: 20px;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  background: linear-gradient(135deg, #d38bb0 0%, #a15b85 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+/* ===== PROFILE CONTAINER ===== */
 .profile-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #fae0ec;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  font-family: 'Segoe UI', sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: 30px;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: rgba(255, 240, 246, 0.1);
+  border: 1px solid rgba(211, 139, 176, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.profile-avatar-wrapper {
+  position: relative;
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #e7a9c0;
+  border: 4px solid #d38bb0;
+  box-shadow: 0 8px 20px rgba(211, 139, 176, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(211, 139, 176, 0.4);
 }
 
 .profile-username {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #a23c68;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
 }
 
+/* ===== PROFILE INFO ===== */
 .profile-info {
-  background-color: #f8dfea;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  border-left: 5px solid #e7a9c0;
+  margin-bottom: 30px;
 }
 
 .profile-info p {
-  margin: 0.6rem 0;
-  font-size: 1rem;
-  color: #333;
+  margin: 15px 0;
+  font-size: 1.1rem;
+  color: #d38bb0;
+  line-height: 1.6;
 }
 
 .profile-info span {
   font-weight: 600;
-  color: #a23c68;
+  color: #fff;
+  margin-right: 10px;
 }
 
 .empty {
-  color: #777;
+  color: rgba(211, 139, 176, 0.6);
   font-style: italic;
 }
 
+.wallet-balance {
+  background: linear-gradient(135deg, #d38bb0 0%, #a15b85 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* ===== PROFILE ACTIONS ===== */
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
 .edit-profile-btn {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
-  background-color: #e7a9c0;
-  color: #922f5a;
+  background: linear-gradient(135deg, #d38bb0 0%, #a15b85 100%);
+  color: white;
   border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s;
 }
 
 .edit-profile-btn:hover {
-  background-color: #f3b8d0;
+  background: linear-gradient(135deg, #a15b85 0%, #8b4570 100%);
+  color: white;
 }
 
-/* Friends section */
+.add-friend-btn {
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  color: white;
+  border: none;
+}
+
+.add-friend-btn:hover {
+  background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+  color: white;
+}
+
+.already-friends {
+  color: #4CAF50;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* ===== FRIENDS SECTION ===== */
 .friends-section {
-  max-width: 800px;
-  margin: 2rem auto;
-  background-color: #fae0ec;
-  padding: 1.5rem;
-  border-radius: 16px;
-  border-left: 5px solid #e7a9c0;
+  margin-bottom: 40px;
 }
 
 .friend-list {
   list-style: none;
-  padding-left: 1rem;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
 }
 
 .friend-list li {
-  margin: 0.5rem 0;
+  background: rgba(255, 240, 246, 0.05);
+  border: 1px solid rgba(211, 139, 176, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
 }
 
-.friend-list a {
-  color: #922f5a;
+.friend-list li:hover {
+  background: rgba(255, 240, 246, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(211, 139, 176, 0.2);
+}
+
+.friend-link {
+  color: #d38bb0;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+  transition: color 0.3s ease;
 }
 
-.friend-list a:hover {
-  text-decoration: underline;
+.friend-link:hover {
+  color: #fff;
 }
 
-/* Wishlist */
-.wishlist {
-  max-width: 800px;
-  margin: 2rem auto;
-  background-color: #fae0ec;
-  padding: 1.5rem;
-  border-radius: 16px;
-  border-left: 5px solid #e7a9c0;
+/* ===== WISHLIST SECTION ===== */
+.wishlist-section {
+  margin-bottom: 40px;
 }
 
-.wishlist ul {
-  list-style: disc;
-  padding-left: 1.5rem;
-}
-
-.wishlist li a {
-  color: #922f5a;
-  text-decoration: none;
-}
-
-.wishlist li a:hover {
-  text-decoration: underline;
-}
-
-/* Achievements */
-.achievement-list {
-  max-width: 800px;
-  margin: 2rem auto;
+.wishlist-grid {
   list-style: none;
-  padding-left: 1rem;
-  background-color: #fae0ec;
-  padding: 1.5rem;
-  border-radius: 16px;
-  border-left: 5px solid #e7a9c0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.wishlist-item {
+  background: rgba(255, 240, 246, 0.05);
+  border: 1px solid rgba(211, 139, 176, 0.2);
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.wishlist-item:hover {
+  background: rgba(255, 240, 246, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(211, 139, 176, 0.2);
+}
+
+.wishlist-link {
+  color: #d38bb0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+.wishlist-link:hover {
+  color: #fff;
+}
+
+/* ===== ACHIEVEMENTS SECTION ===== */
+.achievements-section {
+  margin-bottom: 40px;
+}
+
+.achievement-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .achievement-item {
-  margin: 1rem 0;
-  padding: 0.5rem;
-  border-bottom: 1px solid #e9b8ce;
+  background: rgba(255, 240, 246, 0.05);
+  border: 1px solid rgba(211, 139, 176, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  border-left: 4px solid #d38bb0;
 }
 
-.achievement-item strong {
-  color: #a23c68;
+.achievement-item:hover {
+  background: rgba(255, 240, 246, 0.1);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(211, 139, 176, 0.2);
 }
 
-.achievement-item p {
-  margin: 0.4rem 0 0.2rem;
-  color: #444;
+.achievement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.add-friend-btn {
-  margin-top: 12px;
-  padding: 8px 16px;
-  background-color: #f9aec9;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(210, 140, 210, 0.3);
-  cursor: pointer;
-  transition: background 0.3s ease;
+.achievement-name {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
-.add-friend-btn:hover {
-  background-color: #d6608d;
+.achievement-points {
+  font-size: 0.9rem;
 }
 
-.already-friends {
-  margin-top: 12px;
-  color: #888;
+.achievement-description {
+  color: #d38bb0;
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* ===== EMPTY STATES ===== */
+.empty-state {
+  color: rgba(211, 139, 176, 0.6);
   font-style: italic;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 0 15px;
+    margin: 20px auto;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-username {
+    font-size: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .friend-list {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievement-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  section {
+    padding: 0 15px;
+    margin: 30px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header {
+    padding: 15px;
+  }
+
+  .profile-username {
+    font-size: 1.8rem;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .card-content {
+    padding: 15px;
+  }
+
+  .achievement-item {
+    padding: 15px;
+  }
 }
